@@ -7,9 +7,13 @@
 ### Added
 
 ### Fixed
-- Naprawiono uprawnienia automatyzacji do tworzenia i aktualizowania PR synchronizacji ze Studio.
 
 ### Internal
+
+## 0.1.1 — 2026-10-11
+
+### Fixed
+- Naprawiono uprawnienia automatyzacji do tworzenia i aktualizowania PR synchronizacji ze Studio.
 
 ## 0.1.0 — 2026-10-11
 
