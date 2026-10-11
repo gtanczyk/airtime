@@ -29,6 +29,8 @@ jobs:
           if(!r.ok)throw new Error('Gameplay download HTTP '+r.status);
           await writeFile(process.env.RUNNER_TEMP+'/airtime.mp4',Buffer.from(await r.arrayBuffer()));
           JS
+      - name: Install GIF encoder
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
       - name: Encode looping gameplay preview
         run: |
           mkdir -p docs/media
