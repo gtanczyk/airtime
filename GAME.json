@@ -29,5 +29,11 @@
       "en": "Hold Space to spin, release upright to land. Release and grab again to change shape.",
       "pl": "Przytrzymaj spację, aby obracać się w powietrzu. Puść na pionie, by wylądować. Puść i chwyć ponownie, aby zmienić figurę."
     }
+  },
+  "theme": {
+    "accent": "#fff3d6",
+    "canvasBackground": "#150c26",
+    "canvasBorderColor": "#6b4aa0",
+    "pixelArt": true
   }
 }
