@@ -5,7 +5,8 @@
       "drawing",
       "gfx",
       "effects",
-      "audio"
+      "audio",
+      "ui"
     ]
   },
   "audio": {
@@ -35,5 +36,13 @@
     "canvasBackground": "#150c26",
     "canvasBorderColor": "#6b4aa0",
     "pixelArt": true
+  },
+  "title": {
+    "en": "Airtime",
+    "pl": "Airtime"
+  },
+  "description": {
+    "en": "Perform trampoline flips, combine shapes and land upright to keep your routine going.",
+    "pl": "Wykonuj salta na trampolinie, łącz figury i ląduj na nogach, aby kontynuować pokaz."
   }
 }

@@ -32,6 +32,7 @@ export function startGame() {
       touch: { dpad: false, buttons: [{ keys: [' '], label: 'Spin' }] }
     })
     .audio({ volume: 0.62 })
+    .menu({ accent: '#fff3d6' })
     .init(() => {
       GameKit.progress('round-start');
       return createRound();

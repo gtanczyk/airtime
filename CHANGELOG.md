@@ -7,6 +7,7 @@
 ### Added
 
 ### Fixed
+- Dodano menu wymagane przez aktualny GameKit i opisy gry w językach polskim i angielskim.
 
 ### Internal
 - Przeniesiono pliki gry do src/ i dodano animowany podgląd w README.
