@@ -33,8 +33,21 @@ if (dryRun) {
   console.log(`Validated ${files.length} source files:\n${files.map(file => file.path).join('\n')}`);
   process.exit(0);
 }
-const key = process.env.GAMEDEV_CREATOR_KEY?.trim();
-if (!key) throw new Error('Set GitHub Actions secret GAMEDEV_CREATOR_KEY to your Gamedev.pl creator key.');
+const secretInput = process.env.GAMEDEV_CREATOR_KEY?.trim();
+if (!secretInput) throw new Error('Set GitHub Actions secret GAMEDEV_CREATOR_KEY to your Gamedev.pl creator key.');
+// Studio copies a client configuration containing Authorization: Bearer <key>.
+// Accept that configuration, the header, or the raw key without logging any of them.
+const candidates = secretInput.match(/[A-Za-z0-9_-]{40,}/g) ?? [];
+const creatorKeys = candidates.filter(candidate => {
+  const parts = Buffer.from(candidate, 'base64url').toString('utf8').split('.');
+  return parts.length === 6 && parts[0] === 'c1' && parts[1] === 'u'
+    && /^\\d+$/.test(parts[3]) && /^\\d+$/.test(parts[4]) && /^[a-f0-9]{64}$/i.test(parts[5]);
+});
+if (new Set(creatorKeys).size !== 1) {
+  throw new Error('GAMEDEV_CREATOR_KEY does not contain one valid creator key. Copy the real key/configuration from Studio → Connect → Key, not the kickoff prompt or masked example.');
+}
+const key = creatorKeys[0];
+console.log(`::add-mask::${key}`);
 let id = 0;
 let transportSession;
 async function rpc(method, params) {
