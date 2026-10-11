@@ -1,0 +1,8 @@
+{
+  "objective": "Land several saltos in a row without breaking the combo, mixing at least two body shapes in a single flight.",
+  "achieved": [
+    { "field": "saltos", "atLeast": 6 },
+    { "field": "variety", "atLeast": 2 },
+    { "field": "combo", "atLeast": 6 }
+  ]
+}

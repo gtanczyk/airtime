@@ -1,0 +1,33 @@
+name: Deploy Airtime preview
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'game/**'
+      - 'game.ts'
+      - '*.json'
+      - 'SPEC.md'
+      - 'style.css'
+      - 'scripts/deploy.mjs'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: airtime-gamedev-preview
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate deployment sources
+        run: node scripts/deploy.mjs --dry-run
+      - name: Deliver preview to Gamedev.pl
+        env:
+          GAMEDEV_CREATOR_KEY: ${{ secrets.GAMEDEV_CREATOR_KEY }}
+        run: node scripts/deploy.mjs

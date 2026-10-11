@@ -1,0 +1,35 @@
+<div class="wrap">
+  <h1 id="game-title" data-i18n-en="Airtime" data-i18n-pl="Airtime">Airtime</h1>
+  <p id="game-desc" data-i18n-en="Bounce, switch shapes in mid-air, and stick the landing upright." data-i18n-pl="Odbijaj się, zmieniaj figury w locie i ląduj na pionie.">Bounce, switch shapes in mid-air, and stick the landing upright.</p>
+  <div class="game-controls">
+    <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="false" data-i18n-en="Sound: On" data-i18n-pl="Dźwięk: Wł.">Sound: On</button>
+    <details class="legend">
+      <summary data-i18n-en="Controls" data-i18n-pl="Sterowanie">Controls</summary>
+      <div class="legend-card">
+        <p class="legend-title" data-i18n-en="How to play" data-i18n-pl="Jak grać">How to play</p>
+        <dl class="legend-keys">
+          <dt data-i18n-en="Hold Space" data-i18n-pl="Przytrzymaj spację">Hold Space</dt>
+          <dd data-i18n-en="Grip and spin while in the air" data-i18n-pl="Chwyć się i obracaj w powietrzu">Grip and spin while in the air</dd>
+          <dt data-i18n-en="Release" data-i18n-pl="Puść">Release</dt>
+          <dd data-i18n-en="Open out — the angle freezes, so let go when the halo turns green" data-i18n-pl="Wyprostuj się — kąt zostaje zamrożony, więc puść, gdy poświata zrobi się zielona">Open out — the angle freezes, so let go when the halo turns green</dd>
+          <dt data-i18n-en="Release, then grab again" data-i18n-pl="Puść i chwyć ponownie">Release, then grab again</dt>
+          <dd data-i18n-en="Change body shape mid-flight: Tuck → Pike → Straddle → Layout. Slower spin, more points, finer control over the landing." data-i18n-pl="Zmień figurę w locie: Grupa → Półgrupa → Rozkrok → Wyprost. Wolniejszy obrót, więcej punktów, precyzyjniejsze lądowanie.">Change body shape mid-flight: Tuck → Pike → Straddle → Layout. Slower spin, more points, finer control over the landing.</dd>
+          <dt data-i18n-en="Goal" data-i18n-pl="Cel">Goal</dt>
+          <dd data-i18n-en="Chain clean landings for the highest score" data-i18n-pl="Łącz czyste lądowania, by zdobyć najwyższy wynik">Chain clean landings for the highest score</dd>
+          <dt data-i18n-en="Scoring" data-i18n-pl="Punkty">Scoring</dt>
+          <dd data-i18n-en="100–320 per salto depending on shape, +40 for a perfect stick, multiplied by shape variety (up to x2.2) and by the combo" data-i18n-pl="100–320 za salto zależnie od figury, +40 za idealne lądowanie, mnożone przez różnorodność figur (do x2,2) i przez combo">100–320 per salto depending on shape, +40 for a perfect stick, multiplied by shape variety (up to x2.2) and by the combo</dd>
+          <dt>M</dt>
+          <dd data-i18n-en="Sound on/off" data-i18n-pl="Dźwięk wł./wył.">Sound on/off</dd>
+          <dt>Enter / R</dt>
+          <dd data-i18n-en="Play again" data-i18n-pl="Zagraj ponownie">Play again</dd>
+          <dt data-i18n-en="Touch" data-i18n-pl="Dotyk">Touch</dt>
+          <dd data-i18n-en="Hold anywhere on the playfield, or the Spin button — lift and touch again to change shape" data-i18n-pl="Przytrzymaj dowolne miejsce na planszy lub przycisk Spin — puść i dotknij ponownie, by zmienić figurę">Hold anywhere on the playfield, or the Spin button — lift and touch again to change shape</dd>
+        </dl>
+        <p class="legend-close" data-i18n-en="Click or tap anywhere outside to close" data-i18n-pl="Kliknij lub dotknij obok, aby zamknąć">Click or tap anywhere outside to close</p>
+      </div>
+    </details>
+  </div>
+  <canvas id="game" width="640" height="400" tabindex="0" role="img" aria-label="Airtime playfield: an acrobat somersaulting above a circus trampoline" data-i18n-aria-label-en="Airtime playfield: an acrobat somersaulting above a circus trampoline" data-i18n-aria-label-pl="Airtime — pole gry: akrobatka wykonująca salta nad cyrkową trampoliną"></canvas>
+  <p class="hint" data-i18n-en="Hold Space to grip, release upright to land. Let go and grab again to change shape. Press M to mute." data-i18n-pl="Przytrzymaj spację, by się chwycić, puść na pionie, by wylądować. Puść i chwyć ponownie, by zmienić figurę. Naciśnij M, aby wyciszyć.">Hold Space to grip, release upright to land. Let go and grab again to change shape. Press M to mute.</p>
+  <p id="game-status" class="sr-only" aria-live="polite"></p>
+</div>

@@ -1,0 +1,33 @@
+{
+  "engine": {
+    "modules": [
+      "input",
+      "drawing",
+      "gfx",
+      "effects",
+      "audio"
+    ]
+  },
+  "audio": {
+    "sounds": [
+      "ui-toggle",
+      "jump",
+      "coin",
+      "bell",
+      "buzzer",
+      "rustle",
+      "lose"
+    ],
+    "music": "carnival-spin"
+  },
+  "howToPlay": {
+    "goal": {
+      "en": "Chain clean landings for the highest score.",
+      "pl": "Łącz czyste lądowania, by zdobyć najwyższy wynik."
+    },
+    "hint": {
+      "en": "Hold Space to spin, release upright to land. Release and grab again to change shape.",
+      "pl": "Przytrzymaj spację, aby obracać się w powietrzu. Puść na pionie, by wylądować. Puść i chwyć ponownie, aby zmienić figurę."
+    }
+  }
+}

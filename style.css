@@ -1,0 +1,33 @@
+.wrap {
+  font-family: system-ui, sans-serif;
+  text-align: center;
+  color: #fff3d6;
+}
+
+.wrap h1 {
+  margin: 0.2em 0 0.1em;
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wrap #game-desc {
+  margin: 0 0 0.6em;
+  opacity: 0.78;
+  font-size: 0.9rem;
+}
+
+#game {
+  max-width: 100%;
+  background: #150c26;
+  border: 2px solid #6b4aa0;
+  border-radius: 12px;
+  touch-action: none;
+  image-rendering: pixelated;
+}
+
+.hint {
+  margin-top: 0.6em;
+  font-size: 0.8rem;
+  opacity: 0.68;
+}
