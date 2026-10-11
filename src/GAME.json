@@ -4,9 +4,9 @@
       "input",
       "drawing",
       "gfx",
+      "ui",
       "effects",
-      "audio",
-      "ui"
+      "audio"
     ]
   },
   "audio": {

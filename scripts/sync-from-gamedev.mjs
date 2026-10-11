@@ -12,6 +12,12 @@ export async function applySnapshot(root, snapshot) {
     return false;
   }
   if (!snapshot.version || !Array.isArray(snapshot.files) || snapshot.files.length === 0) throw new Error('Incomplete Studio snapshot');
+  const statePath = path.join(root,'../.github/gamedev-sync.json');
+  const previous = await readFile(statePath,'utf8').then(JSON.parse,()=>null);
+  if(previous?.version === snapshot.version) {
+    console.log('Studio version already synchronized; preserving repository edits.');
+    return false;
+  }
   const selected = snapshot.files.filter(f => sourcePath(f.path));
   for (const p of ['SPEC.md','GAME.json','game.ts']) if (!selected.some(f => f.path === p)) throw new Error('Missing required source: '+p);
   const paths = new Set();
@@ -35,6 +41,8 @@ export async function applySnapshot(root, snapshot) {
     await mkdir(path.dirname(dest),{recursive:true});
     await writeFile(dest,f.content);
   }
+  await mkdir(path.dirname(statePath),{recursive:true});
+  await writeFile(statePath,JSON.stringify({version:snapshot.version},null,2)+'\n');
   if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT,'version='+String(snapshot.version).replace(/[^A-Za-z0-9_.-]/g,'')+'\n');
   console.log('Downloaded Studio version '+snapshot.version);
   return true;
