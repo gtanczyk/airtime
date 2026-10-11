@@ -38,31 +38,45 @@ Do lokalnego uruchamiania gry użyj oficjalnego [gamedevpl CLI](https://www.game
 i jego poleceń `checkout airtime` oraz `play` — gra korzysta z Creator Kit, nie jest
 samodzielną stroną HTML.
 
-## Kontrolowany deployment przez tag
+## Wydania z CHANGELOG.md
 
-Commity i push do master nie wdrażają gry. Aby wdrożyć konkretny commit:
+Zmiany opisuj w sekcji `Unreleased`:
 
-```sh
-git tag preview-2026-10-11-1
-git push origin preview-2026-10-11-1
+```md
+## Unreleased
+
+### Added
+- Nowa figura akrobatyczna.
+
+### Fixed
+- Poprawiono naliczanie combo.
 ```
 
-Używaj nowej nazwy taga dla każdego wdrożenia. Workflow pobiera commit wskazany
-przez tag i wysyła go jako podgląd. Opis w Studio wskazuje repozytorium, tag i commit.
+Po pushu do master workflow **Airtime release PR** otwiera lub aktualizuje jeden PR
+`release/airtime`. Wersja wynika z kategorii: Breaking → major, Added → minor,
+Fixed → patch. Same wpisy Internal nie tworzą wydania. Startowa wersja 0.1.0 jest
+punktem odniesienia; nie uruchamia automatycznego deploymentu.
+
+Ty decydujesz, kiedy wydać: scal PR wydania. Workflow **Airtime release** wysyła
+podgląd do Studio, tworzy tag `airtime-vX.Y.Z` i GitHub Release z opisem z changeloga.
+Akceptacja wysyłki nie oznacza, że build przeszedł weryfikację — wynik jest w Studio.
+Publiczna publikacja gry pozostaje osobnym krokiem.
+
+Nie trzeba ręcznie tworzyć tagów. Starszy workflow z tagami `preview-*` pozostaje
+dostępny do próbnych wdrożeń bez wydania. Ponowienie workflow istniejącego GitHub
+Release pomija deployment. Scalenie Release PR powinno wykonać konto użytkownika;
+scalenie automatyzacją z GITHUB_TOKEN nie uruchamia kolejnego workflow.
 
 ## Gamedev.pl → GitHub
 
-Workflow **Sync sources from Gamedev.pl** sprawdza źródła co godzinę i na żądanie
-(**Actions → Run workflow**). Jeśli są różnice względem master, tworzy lub aktualizuje
-PR z gałęzi `sync/gamedev`. Bez różnic nie tworzy PR. Synchronizuje również usunięcia
-plików gry; nie nadpisuje workflow, skryptów, licencji ani dokumentacji repo.
+Workflow **Sync sources from Gamedev.pl** sprawdza źródła co godzinę lub ręcznie.
+Różnice tworzą albo aktualizują PR `sync/gamedev`, także usunięcia plików gry.
+Nie nadpisuje workflow, skryptów, dokumentacji ani licencji. Pomija aktywnego agenta
+i niezapisane edycje. Importowany podgląd nie musi mieć pozytywnego wyniku buildu.
+Przejrzyj PR: platforma może zastąpić zmiany repo, których jeszcze nie wdrożono.
 
-Importuje aktualne dostarczone źródła ze Studio, również podglądy. To nie oznacza,
-że dana wersja przeszła weryfikację buildu. Przy aktywnym agencie albo niezapisanych
-edycjach w Studio pomija sprawdzenie. Przejrzyj PR: źródła z platformy mogą zastępować
-zmiany, które są już w master, lecz nie zostały jeszcze wdrożone tagiem.
+Scalenie synchronizacji samo nie wdraża gry. Dopisz zmiany do Unreleased, jeśli
+chcesz uwzględnić je w kolejnym wydaniu.
 
-Oba workflow używają tego samego PAT. Jeśli GitHub odmawia tworzenia PR przez Actions,
-w **Settings → Actions → General → Workflow permissions** włącz
+Oba workflow tworzące PR wymagają w Settings → Actions → General opcji
 **Allow GitHub Actions to create and approve pull requests**.
-Scalenie synchronizującego PR nie wdraża gry; deployment wymaga taga `preview-*`.

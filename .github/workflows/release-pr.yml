@@ -1,0 +1,50 @@
+name: Airtime release PR
+on:
+  push:
+    branches: [master]
+    paths: ['CHANGELOG.md', 'VERSION', 'scripts/release.mjs', '.github/workflows/release-pr.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: airtime-release-pr
+  cancel-in-progress: false
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compute next version
+        id: next
+        run: echo "version=$(node scripts/release.mjs next)" >> "$GITHUB_OUTPUT"
+      - name: Close obsolete release PR
+        if: steps.next.outputs.version == 'none'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          number="$(gh pr list --head release/airtime --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh pr close "$number" --delete-branch --comment "Unreleased nie zawiera zmian do wydania."
+          fi
+      - name: Prepare release
+        if: steps.next.outputs.version != 'none'
+        run: node scripts/release.mjs cut
+      - uses: peter-evans/create-pull-request@v7
+        if: steps.next.outputs.version != 'none'
+        with:
+          branch: release/airtime
+          base: master
+          delete-branch: true
+          add-paths: |
+            CHANGELOG.md
+            VERSION
+          commit-message: 'release: Airtime v${{ steps.next.outputs.version }}'
+          title: 'Wydanie Airtime v${{ steps.next.outputs.version }}'
+          body: |
+            Przenosi Unreleased do wersji `${{ steps.next.outputs.version }}`.
+            Scalenie PR utworzy tag i GitHub Release oraz wdroży podgląd w Studio.
+            Publiczna gra nie zostanie opublikowana. Bez automatycznego scalania.
