@@ -56,6 +56,17 @@ if (pat) {
   }
   const session = await studio('GET', '/session');
   if (session.locked) throw new Error('An agent owns this round. Finish its session in Studio before deploying.');
+  const remote = await studio('GET', '');
+  if (remote.readOnly || remote.files?.some(f => f.stagedBy) || remote.deleted?.length) {
+    throw new Error('Studio has active or unsent changes; finish them before deployment.');
+  }
+  const localPaths = new Set(files.map(f => f.path));
+  const managed = p => allowed.has(p) || /^game\/[\w/-]+\.(ts|json)$/.test(p);
+  const removed = remote.files.filter(f => managed(f.path) && !localPaths.has(f.path));
+  for (const file of removed) {
+    await studio('POST', '/stage/delete', { path: file.path });
+    console.log('Removed from deployment: '+file.path);
+  }
   for (const file of files) await studio('PUT', '/stage', { ...file, rebuild: false });
   const delivery = await studio('POST', '/deliver', { mode: 'preview', attestation: true, summary: `Airtime z GitHub ${process.env.GITHUB_REPOSITORY ?? 'gtanczyk/airtime'} · ${process.env.GITHUB_REF_NAME ?? 'ręczne wdrożenie'} · ${(process.env.GITHUB_SHA ?? '').slice(0, 7)}` });
   if (!delivery.accepted || !delivery.gateStarted) throw new Error('Studio did not start the preview build; review Studio before retrying.');

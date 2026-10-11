@@ -1,0 +1,77 @@
+name: Verify Airtime
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Airtime release PR', 'Sync sources from Gamedev.pl']
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: >-
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'master' || github.ref }}
+      - name: Select generated PR branch
+        if: github.event_name == 'workflow_run'
+        env:
+          UPSTREAM_WORKFLOW: ${{ github.event.workflow_run.name }}
+        run: |
+          branch=sync/gamedev
+          if [ "$UPSTREAM_WORKFLOW" = 'Airtime release PR' ]; then branch=release/airtime; fi
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            git fetch origin "$branch"
+            git checkout --detach FETCH_HEAD
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate sources
+        run: node scripts/deploy.mjs --dry-run
+      - name: Download official verification workspace
+        env:
+          GAMEDEV_CREATOR_KEY: ${{ secrets.GAMEDEV_CREATOR_KEY }}
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFile} from 'node:fs/promises';
+          const token=process.env.GAMEDEV_CREATOR_KEY?.match(/gdpl_pat_[a-f0-9]{16}_[A-Za-z0-9_-]{43}/)?.[0];
+          if(!token) throw new Error('Missing Gamedev.pl PAT');
+          console.log('::add-mask::'+token);
+          const response=await fetch('https://www.gamedev.pl/api/me/studio/games/airtime/workspace',{
+            headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(120000)
+          });
+          if(!response.ok)throw new Error('Workspace HTTP '+response.status);
+          await writeFile(process.env.RUNNER_TEMP+'/airtime-workspace.tgz',Buffer.from(await response.arrayBuffer()));
+          JS
+      - name: Prepare Creator Kit and overlay exact PR sources
+        env:
+          VERIFY_ROOT: ${{ runner.temp }}/airtime-verify
+        run: |
+          set -euo pipefail
+          mkdir -p "$VERIFY_ROOT"
+          tar -xzf "$RUNNER_TEMP/airtime-workspace.tgz" -C "$VERIFY_ROOT"
+          cd "$VERIFY_ROOT"
+          if [ -f setup.mjs ]; then node setup.mjs; fi
+          if [ -f workspace-setup.mjs ]; then node workspace-setup.mjs --force; fi
+          npm ci
+          cd "$GITHUB_WORKSPACE"
+          node scripts/prepare-verify.mjs
+      - name: Typecheck and static game checks
+        env:
+          VERIFY_ROOT: ${{ runner.temp }}/airtime-verify
+        run: |
+          set -euo pipefail
+          cd "$VERIFY_ROOT"
+          typecheck="$(node -p "require('./verify-scripts.json').typecheck")"
+          static="$(node -p "require('./verify-scripts.json').checkStatic")"
+          npm run "$typecheck"
+          npm run "$static"
