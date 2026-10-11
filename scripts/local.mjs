@@ -79,7 +79,7 @@ else if(command==='verify') {
  if(!bin)throw new Error('gamedevpl executable missing; run npm install');
  const cli=path.resolve(path.dirname(cliPackagePath),bin);
  const smoke=process.argv.includes('--smoke');
- const output=await preview(cli,['play','--preview','airtime',...(smoke||process.argv.includes('--no-open')?['--no-open']:[])]);
+ const output=await preview(cli,['play','--preview','--detach','airtime',...(smoke||process.argv.includes('--no-open')?['--no-open']:[])]);
  if(smoke) {
   try {
    const url=output.match(/http:\/\/127\.0\.0\.1:\d+\/[A-Za-z0-9]+\//)?.[0];
