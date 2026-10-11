@@ -1,15 +1,7 @@
 name: Deploy Airtime preview
 on:
   push:
-    branches: [master]
-    paths:
-      - 'game/**'
-      - 'game.ts'
-      - '*.json'
-      - 'SPEC.md'
-      - 'style.css'
-      - 'scripts/deploy.mjs'
-      - '.github/workflows/deploy.yml'
+    tags: ['preview-*']
   workflow_dispatch:
 permissions:
   contents: read

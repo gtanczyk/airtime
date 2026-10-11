@@ -57,7 +57,7 @@ if (pat) {
   const session = await studio('GET', '/session');
   if (session.locked) throw new Error('An agent owns this round. Finish its session in Studio before deploying.');
   for (const file of files) await studio('PUT', '/stage', { ...file, rebuild: false });
-  const delivery = await studio('POST', '/deliver', { mode: 'preview', attestation: true });
+  const delivery = await studio('POST', '/deliver', { mode: 'preview', attestation: true, summary: `Airtime z GitHub ${process.env.GITHUB_REPOSITORY ?? 'gtanczyk/airtime'} · ${process.env.GITHUB_REF_NAME ?? 'ręczne wdrożenie'} · ${(process.env.GITHUB_SHA ?? '').slice(0, 7)}` });
   if (!delivery.accepted || !delivery.gateStarted) throw new Error('Studio did not start the preview build; review Studio before retrying.');
   console.log(`Preview build started: ${delivery.version}. Verdict: https://www.gamedev.pl/studio/airtime`);
   if (process.env.GITHUB_STEP_SUMMARY) {
@@ -73,7 +73,7 @@ const candidates = secretInput.match(/[A-Za-z0-9_-]{40,}/g) ?? [];
 const creatorKeys = candidates.filter(candidate => {
   const parts = Buffer.from(candidate, 'base64url').toString('utf8').split('.');
   return parts.length === 6 && parts[0] === 'c1' && parts[1] === 'u'
-    && /^\\d+$/.test(parts[3]) && /^\\d+$/.test(parts[4]) && /^[a-f0-9]{64}$/i.test(parts[5]);
+    && /^\d+$/.test(parts[3]) && /^\d+$/.test(parts[4]) && /^[a-f0-9]{64}$/i.test(parts[5]);
 });
 if (new Set(creatorKeys).size !== 1) {
   throw new Error('GAMEDEV_CREATOR_KEY does not contain one valid creator key. Copy the real key/configuration from Studio → Connect → Key, not the kickoff prompt or masked example.');

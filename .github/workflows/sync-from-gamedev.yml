@@ -1,0 +1,47 @@
+name: Sync sources from Gamedev.pl
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/sync-from-gamedev.yml'
+      - 'scripts/sync-from-gamedev.mjs'
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: airtime-gamedev-preview
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download completed Studio sources
+        id: download
+        env:
+          GAMEDEV_CREATOR_KEY: ${{ secrets.GAMEDEV_CREATOR_KEY }}
+        run: node scripts/sync-from-gamedev.mjs
+      - name: Open or update source sync PR
+        if: steps.download.outputs.version != ''
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync/gamedev
+          base: master
+          delete-branch: true
+          commit-message: 'Sync Airtime sources from Gamedev.pl'
+          title: 'Synchronizacja Airtime z Gamedev.pl'
+          body: |
+            Źródła wersji `${{ steps.download.outputs.version }}` pobrane z [Studio Airtime](https://www.gamedev.pl/studio/airtime).
+
+            PR pokazuje różnice względem master, w tym usunięte pliki źródłowe. Sprawdź zmiany przed scaleniem — mogą zastępować lokalne poprawki z repozytorium.
+            Scalenie nie uruchamia deploymentu. Wyślij tag preview-*, gdy chcesz wdrożyć podgląd.
