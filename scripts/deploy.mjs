@@ -35,6 +35,38 @@ if (dryRun) {
 }
 const secretInput = process.env.GAMEDEV_CREATOR_KEY?.trim();
 if (!secretInput) throw new Error('Set GitHub Actions secret GAMEDEV_CREATOR_KEY to your Gamedev.pl creator key.');
+
+const pat = secretInput.match(/gdpl_pat_[a-f0-9]{16}_[A-Za-z0-9_-]{43}/)?.[0];
+if (pat) {
+  console.log(`::add-mask::${pat}`);
+  async function studio(method, suffix, body) {
+    const response = await fetch(`https://www.gamedev.pl/api/me/studio/games/${slug}/sources${suffix}`, {
+      method,
+      headers: { Authorization: `Bearer ${pat}`, 'Content-Type': 'application/json' },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+      signal: AbortSignal.timeout(120_000),
+    });
+    const data = await response.json();
+    if (!response.ok || data.accepted === false) {
+      const reason = String(data.message ?? data.error ?? data.rejected ?? response.status)
+        .replaceAll(pat, '[redacted]').replaceAll(secretInput, '[redacted]');
+      throw new Error(`Studio ${method} ${suffix}: ${reason.slice(0, 500)}`);
+    }
+    return data;
+  }
+  const session = await studio('GET', '/session');
+  if (session.locked) throw new Error('An agent owns this round. Finish its session in Studio before deploying.');
+  for (const file of files) await studio('PUT', '/stage', { ...file, rebuild: false });
+  const delivery = await studio('POST', '/deliver', { mode: 'preview', attestation: true });
+  if (!delivery.accepted || !delivery.gateStarted) throw new Error('Studio did not start the preview build; review Studio before retrying.');
+  console.log(`Preview build started: ${delivery.version}. Verdict: https://www.gamedev.pl/studio/airtime`);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const { appendFile } = await import('node:fs/promises');
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, `Airtime preview build started: \`${delivery.version}\`.\n\n[Build verdict and preview](https://www.gamedev.pl/studio/airtime).\n`);
+  }
+  process.exit(0);
+}
+
 // Studio copies a client configuration containing Authorization: Bearer <key>.
 // Accept that configuration, the header, or the raw key without logging any of them.
 const candidates = secretInput.match(/[A-Za-z0-9_-]{40,}/g) ?? [];
