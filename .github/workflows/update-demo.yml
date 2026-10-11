@@ -1,0 +1,45 @@
+name: Update gameplay GIF
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['.github/workflows/update-demo.yml']
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download actual published gameplay
+        env:
+          GAMEDEV_CREATOR_KEY: ${{ secrets.GAMEDEV_CREATOR_KEY }}
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFile} from 'node:fs/promises';
+          const token=process.env.GAMEDEV_CREATOR_KEY?.match(/gdpl_pat_[a-f0-9]{16}_[A-Za-z0-9_-]{43}/)?.[0];
+          if(!token)throw new Error('Missing PAT');
+          const r=await fetch('https://www.gamedev.pl/api/games/airtime/media/gameplay.mp4',{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(120000)});
+          if(!r.ok)throw new Error('Gameplay download HTTP '+r.status);
+          await writeFile(process.env.RUNNER_TEMP+'/airtime.mp4',Buffer.from(await r.arrayBuffer()));
+          JS
+      - name: Encode looping gameplay preview
+        run: |
+          mkdir -p docs/media
+          ffmpeg -y -i "$RUNNER_TEMP/airtime.mp4" -t 10 -filter_complex "fps=12,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" -loop 0 docs/media/airtime.gif
+      - name: Commit demo
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/media/airtime.gif
+          if ! git diff --cached --quiet; then
+            git commit -m "Update animated Airtime gameplay preview"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi

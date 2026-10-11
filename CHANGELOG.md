@@ -9,6 +9,7 @@
 ### Fixed
 
 ### Internal
+- Przeniesiono pliki gry do src/ i dodano animowany podgląd w README.
 - Usunięto style.css; wygląd ramki gry jest generowany z GAME.json.theme.
 
 ## 0.1.1 — 2026-10-11

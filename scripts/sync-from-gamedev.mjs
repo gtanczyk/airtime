@@ -48,5 +48,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(120000)
   });
   if (!response.ok) throw new Error('Studio source download failed: HTTP '+response.status);
-  await applySnapshot(process.cwd(),await response.json());
+  await mkdir(path.join(process.cwd(),'src'),{recursive:true});
+  await applySnapshot(path.join(process.cwd(),'src'),await response.json());
 }

@@ -2,7 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
+const root = fileURLToPath(new URL('../src/', import.meta.url));
 const slug = 'airtime';
 const dryRun = process.argv.includes('--dry-run');
 const allowed = new Set(['SPEC.md', 'GAME.json', 'game.ts', 'style.css', 'CAPTURE.json', 'ACCEPTANCE.json', 'AGENT.json', 'EDITOR.json', 'EDITOR.content.json', 'music.json']);

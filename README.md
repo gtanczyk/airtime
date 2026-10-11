@@ -1,9 +1,17 @@
 # Airtime
 
-Źródła gry Airtime z Gamedev.pl, wersja `v20260807T072237694Z-069f28`,
-z metadanymi `howToPlay` wymaganymi przez aktualny silnik.
+![Rozgrywka Airtime](docs/media/airtime.gif)
 
-[Gra](https://www.gamedev.pl/play/airtime) · [Studio](https://www.gamedev.pl/studio/airtime)
+Akrobatyczna gra na trampolinie — obracaj się w powietrzu, zmieniaj figury i ląduj na pionie.
+
+[Zagraj](https://www.gamedev.pl/play/airtime) · [Studio](https://www.gamedev.pl/studio/airtime)
+
+## Układ repozytorium
+
+- `src/` — komplet źródeł gry i metadanych wymaganych przez platformę.
+- `scripts/` — deployment, synchronizacja, verify i wydania.
+- `docs/media/` — animowany podgląd rozgrywki.
+- `CHANGELOG.md` i `VERSION` — historia i numer wydania.
 
 ## Deployment
 

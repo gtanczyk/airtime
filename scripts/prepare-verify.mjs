@@ -1,6 +1,6 @@
 import {readFile,writeFile,readdir,mkdir,rm} from 'node:fs/promises';
 import path from 'node:path';
-const root=process.cwd(), target=process.env.VERIFY_ROOT;
+const root=path.join(process.cwd(),'src'), target=process.env.VERIFY_ROOT;
 if(!target) throw new Error('Missing VERIFY_ROOT');
 const destination=path.join(target,'games/airtime');
 let generatedPage;
