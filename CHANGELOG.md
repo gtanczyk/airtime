@@ -7,6 +7,12 @@
 ### Added
 
 ### Fixed
+
+### Internal
+
+## 0.1.2 — 2026-10-11
+
+### Fixed
 - Dodano menu wymagane przez aktualny GameKit i opisy gry w językach polskim i angielskim.
 
 ### Internal
