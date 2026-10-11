@@ -6,7 +6,7 @@ const destination=path.join(target,'games/airtime');
 let generatedPage;
 try{generatedPage=await readFile(path.join(destination,'index.html'));}catch{}
 await rm(destination,{recursive:true,force:true});await mkdir(destination,{recursive:true});
-const allowed=new Set(['SPEC.md','GAME.json','game.ts','style.css','CAPTURE.json','ACCEPTANCE.json','AGENT.json','EDITOR.json','EDITOR.content.json','music.json']);
+const allowed=new Set(['SPEC.md','GAME.json','game.ts','style.css','CAPTURE.json','ACCEPTANCE.json','AGENT.json','EDITOR.json','EDITOR.content.json','music.json','PLAYTEST.json','TRACE.json','index.html']);
 async function copy(dir=root) {
  for(const e of await readdir(dir,{withFileTypes:true})){
   const abs=path.join(dir,e.name),rel=path.relative(root,abs).split(path.sep).join('/');
@@ -17,7 +17,7 @@ async function copy(dir=root) {
  }
 }
 await copy();
-if(generatedPage) await writeFile(path.join(destination,'index.html'),generatedPage);
+if(generatedPage && !await readFile(path.join(destination,'index.html')).then(()=>true,()=>false)) await writeFile(path.join(destination,'index.html'),generatedPage);
 const kit=JSON.parse(await readFile(path.join(target,'kit.json'),'utf8'));
 const scripts=kit.cliVerification??{typecheck:'typecheck',checkStatic:'check:static'};
 for(const name of [scripts.typecheck,scripts.checkStatic]){
