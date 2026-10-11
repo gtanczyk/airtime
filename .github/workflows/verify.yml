@@ -10,6 +10,7 @@ on:
     types: [completed]
 permissions:
   contents: read
+  pull-requests: read
 jobs:
   verify:
     if: >-
@@ -24,12 +25,14 @@ jobs:
       - name: Select generated PR branch
         if: github.event_name == 'workflow_run'
         env:
+          GH_TOKEN: ${{ github.token }}
           UPSTREAM_WORKFLOW: ${{ github.event.workflow_run.name }}
         run: |
           branch=sync/gamedev
           if [ "$UPSTREAM_WORKFLOW" = 'Airtime release PR' ]; then branch=release/airtime; fi
-          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
-            git fetch origin "$branch"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&base=master" --jq ".[] | select(.head.ref == \"$branch\") | .head.sha")"
+          if [ -n "$sha" ]; then
+            git fetch origin "$sha"
             git checkout --detach FETCH_HEAD
           fi
       - uses: actions/setup-node@v4
