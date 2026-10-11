@@ -5,11 +5,15 @@
 ### Breaking
 
 ### Added
-- Dodano npm run dev z lokalnym podglądem i automatycznym przygotowaniem Creator Kit.
 
 ### Fixed
 
 ### Internal
+
+## 0.2.0 — 2026-10-11
+
+### Added
+- Dodano npm run dev z lokalnym podglądem i automatycznym przygotowaniem Creator Kit.
 
 ## 0.1.2 — 2026-10-11
 
