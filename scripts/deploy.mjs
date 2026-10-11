@@ -64,7 +64,10 @@ async function tool(name, args) {
   const data = result.structuredContent ?? JSON.parse(result.content.find(item => item.type === 'text').text);
   if (result.isError || data.error || data.rejected || data.ok === false) {
     // Do not dump replies: they may include capabilities or bearer credentials.
-    throw new Error(`Gamedev.pl refused ${name}; review the round in Studio.`);
+    const reason = String(data.error ?? data.reason ?? data.rejected ?? 'unknown refusal')
+      .replaceAll(key, '[redacted]')
+      .replace(/(?:mcp2_|gdpl_|member1_|creator1_)[A-Za-z0-9_.-]+/g, '[redacted]');
+    throw new Error(`Gamedev.pl refused ${name}: ${reason.slice(0, 500)}`);
   }
   if (data.pendingMessages?.length) throw new Error('Creator messages are pending; handle them in Studio before deploying.');
   if (data.stop && name !== 'end') throw new Error(`Gamedev.pl requested stop during ${name}.`);
