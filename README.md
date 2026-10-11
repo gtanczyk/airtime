@@ -34,17 +34,29 @@ oczekujące wiadomości twórcy, workflow przerywa pracę.
 `index.html` jest zachowaną stroną źródłowej wersji. Aktualna platforma generuje stronę
 z `GAME.json.howToPlay`; workflow nie wysyła `index.html` ani konfiguracji repozytorium.
 
-## Sprawdzenie paczki lokalnie
+## Uruchomienie lokalne
 
-Wymagany Node.js 22 lub nowszy; brak dodatkowych zależności.
+Wymagany Node.js 22 lub nowszy.
 
 ```sh
-node scripts/deploy.mjs --dry-run
+npm install
+npm run dev
 ```
 
-Do lokalnego uruchamiania gry użyj oficjalnego [gamedevpl CLI](https://www.gamedev.pl/connect)
-i jego poleceń `checkout airtime` oraz `play` — gra korzysta z Creator Kit, nie jest
-samodzielną stroną HTML.
+Przy pierwszym uruchomieniu potrzebny jest PAT z [Studio](https://www.gamedev.pl/studio/airtime/connect).
+Zapisz go lokalnie w ignorowanym pliku `.env`:
+
+```dotenv
+GAMEDEV_PAT=twój_personal_access_token
+```
+
+Skrypt pobiera oficjalny Creator Kit do `.gamedev/local/`, instaluje jego zależności
+i otwiera lokalny podgląd przez gamedevpl CLI. Po przygotowaniu środowiska PAT nie
+jest potrzebny do kolejnych uruchomień. Zmiany w `src/` odświeżają podgląd;
+Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
+
+`npm run verify` wykonuje typecheck i sprawdzenia statyczne na tych samych źródłach.
+`npm run verify:sources` sprawdza paczkę bez pobierania silnika.
 
 ## Wydania z CHANGELOG.md
 

@@ -5,6 +5,7 @@
 ### Breaking
 
 ### Added
+- Dodano npm run dev z lokalnym podglądem i automatycznym przygotowaniem Creator Kit.
 
 ### Fixed
 

@@ -55,26 +55,13 @@ jobs:
           if(!response.ok)throw new Error('Workspace HTTP '+response.status);
           await writeFile(process.env.RUNNER_TEMP+'/airtime-workspace.tgz',Buffer.from(await response.arrayBuffer()));
           JS
-      - name: Prepare Creator Kit and overlay exact PR sources
+      - name: Install local launcher
+        run: npm ci
+      - name: Prepare official local environment
         env:
-          VERIFY_ROOT: ${{ runner.temp }}/airtime-verify
-        run: |
-          set -euo pipefail
-          mkdir -p "$VERIFY_ROOT"
-          tar -xzf "$RUNNER_TEMP/airtime-workspace.tgz" -C "$VERIFY_ROOT"
-          cd "$VERIFY_ROOT"
-          if [ -f setup.mjs ]; then node setup.mjs; fi
-          if [ -f workspace-setup.mjs ]; then node workspace-setup.mjs --force; fi
-          npm ci
-          cd "$GITHUB_WORKSPACE"
-          node scripts/prepare-verify.mjs
+          GAMEDEV_WORKSPACE_ARCHIVE: ${{ runner.temp }}/airtime-workspace.tgz
+        run: npm run setup
       - name: Typecheck and static game checks
-        env:
-          VERIFY_ROOT: ${{ runner.temp }}/airtime-verify
-        run: |
-          set -euo pipefail
-          cd "$VERIFY_ROOT"
-          typecheck="$(node -p "require('./verify-scripts.json').typecheck")"
-          static="$(node -p "require('./verify-scripts.json').checkStatic")"
-          npm run "$typecheck"
-          npm run "$static"
+        run: npm run verify
+      - name: Smoke test npm run dev
+        run: npm run dev -- --smoke
