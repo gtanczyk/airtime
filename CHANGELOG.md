@@ -7,6 +7,7 @@
 ### Added
 
 ### Fixed
+- Naprawiono uprawnienia automatyzacji do tworzenia i aktualizowania PR synchronizacji ze Studio.
 
 ### Internal
 
