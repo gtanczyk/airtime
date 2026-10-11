@@ -1,6 +1,6 @@
-# Airtime
-
 ![Rozgrywka Airtime](docs/media/airtime.gif)
+
+# Airtime
 
 Akrobatyczna gra na trampolinie — obracaj się w powietrzu, zmieniaj figury i ląduj na pionie.
 
