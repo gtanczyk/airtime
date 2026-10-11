@@ -65,6 +65,10 @@ jobs:
           npm ci
           cd "$GITHUB_WORKSPACE"
           node scripts/prepare-verify.mjs
+      - name: Inspect shell API
+        run: |
+          grep -R -n -A 30 -B 3 'menu(' "$RUNNER_TEMP/airtime-verify" --include='*.d.ts' --include='*.ts' | head -180 || true
+          cat "$RUNNER_TEMP/airtime-verify/games/airtime/index.html"
       - name: Typecheck and static game checks
         env:
           VERIFY_ROOT: ${{ runner.temp }}/airtime-verify
