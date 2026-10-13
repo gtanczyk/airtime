@@ -10,6 +10,8 @@
 
 ### Internal
 
+- `npm run play` opens the local preview; the gamedevpl CLI pin moves to 0.44.2, so the preview also works through Codespaces port forwarding.
+
 ## 0.2.0 — 2026-10-11
 
 ### Added
