@@ -6,3 +6,4 @@ dist/
 *.log
 .gamedev-base.json
 .gamedev/
+work/

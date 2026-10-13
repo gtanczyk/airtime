@@ -54,10 +54,10 @@ export const POSES: Record<Shape, Pose> = {
   // Jack-knife: torso forward, legs out
   pike: {
     lean: 0.25,
-    hipL: -0.42,
-    hipR: -0.5,
-    kneeL: -0.4,
-    kneeR: -0.48,
+    hipL: -0.04,
+    hipR: 0.04,
+    kneeL: -0.04,
+    kneeR: 0.04,
     thigh: 16,
     shin: 15,
     armL: -0.1,
@@ -69,11 +69,11 @@ export const POSES: Record<Shape, Pose> = {
   },
   // Legs split into a wide V, arms reaching between them.
   straddle: {
-    lean: 0.4,
-    hipL: 0.72,
-    hipR: -1.02,
-    kneeL: 0.74,
-    kneeR: -1.04,
+    lean: 0,
+    hipL: 2.34,
+    hipR: 0.80,
+    kneeL: 2.34,
+    kneeR: 0.80,
     thigh: 16,
     shin: 15,
     armL: -0.05,
@@ -83,7 +83,7 @@ export const POSES: Record<Shape, Pose> = {
     upper: 12,
     fore: 11
   },
-  layout: LAYOUT
+  layout: { ...LAYOUT, armL: -1.72, armR: -1.42, elbowL: -1.72, elbowR: -1.42, upper: 14, fore: 12 }
 };
 
 function segment(
@@ -96,6 +96,7 @@ function segment(
   fill: string
 ) {
   draw.with({ x: ox, y: oy, rot: angle }, () => {
+    draw.rect(-1, -thick / 2 - 1, len + 2, thick + 2, { fill: '#dceaf4' });
     draw.rect(0, -thick / 2, len, thick, { fill });
   });
 }
@@ -134,13 +135,16 @@ export function paintAcrobat(
   const sy = -Math.cos(pose.lean) * 16;
 
   draw.with({ x: q(x), y: q(y), rot }, () => {
-    leg(draw, pose, pose.hipL, pose.kneeL, '#7a1c30');
-    arm(draw, pose, sx, sy, pose.armL, pose.elbowL, '#b07f52');
+    leg(draw, pose, pose.hipL, pose.kneeL, '#cc4967');
+    arm(draw, pose, sx, sy, pose.armL, pose.elbowL, '#dba875');
 
     draw.with({ rot: pose.lean }, () => {
+      draw.rect(-11, -22, 22, 24, { fill: '#dceaf4' });
       draw.rect(-9, -20, 18, 20, { fill: SUIT });
+      draw.rect(-7, -18, 4, 6, { fill: '#ff8995' });
       draw.rect(-9, -12, 18, 4, { fill: trim });
       draw.rect(-7, -34, 14, 14, { fill: SKIN });
+      draw.rect(-11, -39, 22, 8, { fill: '#dceaf4' });
       draw.rect(-10, -38, 20, 6, { fill: HAIR });
       draw.rect(-10, -31, 4, 7, { fill: HAIR });
       draw.rect(0, -27, 4, 4, { fill: '#2b2a45' });

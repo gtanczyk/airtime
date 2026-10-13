@@ -66,6 +66,7 @@ w `gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRe
 i testujemy czysty klon. Zmiana przypięcia przebuduje publiczny runtime przy kolejnym
 uruchomieniu. HTTP 404 oznacza niedostępny publiczny kit: Grzegorz musi sprawdzić
 flagę `PUBLIC_KIT_DOWNLOAD=true`, deploy i wsparcie refu. Tarballi i tokenów nie commitujemy.
+`npm test` uruchamia testy lądowań, naliczania figur, misji, bisu, ratunku, wezwań publiczności i kadrowania bez PAT.
 
 ## Wydania z CHANGELOG.md
 

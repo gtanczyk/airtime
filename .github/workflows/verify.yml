@@ -39,6 +39,8 @@ jobs:
           node-version: '22'
       - name: Validate sources
         run: node scripts/deploy.mjs --dry-run
+      - name: Test gameplay regressions
+        run: npm test
       - name: Install local launcher
         run: npm ci
       - name: Test runtime bootstrap

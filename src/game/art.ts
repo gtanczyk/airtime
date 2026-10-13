@@ -2,10 +2,10 @@ import { PX, SHAPE_COLOR, SHAPE_ORDER, wrapAngle, PERFECT_WINDOW, CLEAN_WINDOW, 
 
 export const SKIN = '#f6c48d';
 export const SUIT = '#ff4d5e';
-export const SUIT_DARK = '#c22b46';
+export const SUIT_DARK = '#e85474';
 export const TRIM = '#ffd23f';
 export const HAIR = '#3b2416';
-export const SHOES = '#2b2a45';
+export const SHOES = '#dceaf4';
 export const TRAIL = '#ff9ec7';
 
 export const FRAME = '#37305e';
@@ -28,22 +28,24 @@ function block(draw: GameKitDraw, x: number, y: number, w: number, h: number, fi
 }
 
 export function paintTrail(draw: GameKitDraw, round: Round, x: number, toScreen: (alt: number) => number) {
-  for (let i = 1; i < round.ghosts.length; i += 2) {
+  for (let i = 2; i < round.ghosts.length; i += 3) {
     const ghost = round.ghosts[i];
     if (ghost.life <= 0) continue;
-    const gy = toScreen(ghost.alt) - 20;
+    const gy = toScreen(ghost.alt) - 32;
     const tint = ghost.shape ? SHAPE_COLOR[ghost.shape] : TRAIL;
-    draw.with({ alpha: ghost.life * 0.32, x: q(x), y: q(gy), rot: ghost.rot }, () => {
-      draw.rect(-8, -8, 16, 16, { fill: tint });
+    draw.with({ alpha: ghost.life * 0.26, x: q(x), y: q(gy), rot: ghost.rot }, () => {
+      draw.rect(-3, -6, 6, 12, { fill: tint });
     });
   }
 }
 
-export function paintLandingRing(draw: GameKitDraw, x: number, y: number, rot: number) {
+export function paintLandingRing(draw: GameKitDraw, x: number, y: number, rot: number, hasTurn: boolean) {
   const err = Math.abs(wrapAngle(rot));
-  if (err >= CLEAN_WINDOW) return;
-  const color = err < PERFECT_WINDOW ? GOOD : WARN;
-  draw.circle(q(x), q(y), 44, { stroke: color, lineWidth: 3 });
+  const color = !hasTurn ? '#7795ba' : err < PERFECT_WINDOW ? GOOD : err < CLEAN_WINDOW ? WARN : '#7795ba';
+  draw.circle(q(x), q(y), 43, { stroke: color, lineWidth: hasTurn && err < CLEAN_WINDOW ? 3 : 1 });
+  draw.line(x - 7, y - 49, x + 7, y - 49, { stroke: GOOD, lineWidth: 3 });
+  const a = wrapAngle(rot);
+  draw.circle(x + Math.sin(a) * 43, y - Math.cos(a) * 43, 4, { fill: hasTurn ? '#eef4ff' : '#7795ba' });
 }
 
 export function paintShapeTag(
@@ -55,7 +57,7 @@ export function paintShapeTag(
   armed: boolean
 ) {
   const w = 104;
-  draw.rect(q(x - w / 2), q(y), w, 20, { fill: 'rgba(21,12,38,0.8)', radius: 5 });
+  draw.rect(q(x - w / 2), q(y), w, 20, { fill: 'rgba(9,17,34,0.9)', radius: 5 });
   draw.text(armed ? `> ${label}` : label, q(x), q(y + 10), {
     fill: color,
     font: '800 12px monospace',

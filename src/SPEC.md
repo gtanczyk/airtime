@@ -12,10 +12,15 @@ landing kicks you higher, which buys more air, which buys more rotations — and
 release window.
 
 ## How it plays
+The first launch waits for input behind a short, explicit SPACE / SPIN tutorial.
+The first successful salto is a guided rehearsal: holding stops the flight upright at
+one full turn until release. Bad practice attempts return to the tutorial with actionable
+advice, without ending the show, spending rescue or earning points. A successful landing
+ends the rehearsal; subsequent flights use ordinary timing and failure rules.
 There is exactly one input, and it never needs aiming: hold it while airborne and the
 acrobat grips and rotates; release and she snaps open, frozen at whatever angle she
-reached. Releasing is always safe — the angle stops where you left it, so the player can
-watch the halo and let go the moment it turns green.
+reached. Release stops rotation immediately. Landing is safe only at an upright angle, so the
+player watches the halo and releases on green.
 
 **Body shapes.** The first grab of a flight is a Tuck. Release for at least 0.12 s and grab
 again in the same flight and she advances to the next shape. Later shapes rotate slower —
@@ -40,20 +45,22 @@ plays the one-shape game and is never shown a control they have not earned.
 - within 1.30 rad — **WOBBLE**: quarter points, combo lost, bounce power drops
 - beyond that — **CRASH**: the run ends
 
-Landing without completing a rotation is a **NO TRICK**: no points, combo lost, and the
-bounce power bleeds away, so idling on the trampoline goes nowhere.
+The angle is checked even before a full rotation: a dangerous partial flip is a **CRASH**,
+a tilted partial flip is a **WOBBLE**, and a safe partial flip is **NO TRICK** (no points,
+combo lost, and reduced bounce power). Idling on the trampoline goes nowhere.
 
 **Scoring.** A salto is worth the weighted average of the shapes it was actually spent in,
 so half a turn held in Straddle pays more than the same half turn in Tuck. A perfect stick
 adds 40. That total is multiplied by the variety bonus for distinct shapes used in the
-flight (x1 / x1.4 / x1.8 / x2.2 for 1 / 2 / 3 / 4) and then by the combo multiplier
+flight (each shape must accumulate at least 0.18 rad; x1 / x1.4 / x1.8 / x2.2 for 1 / 2 / 3 / 4) and then by the combo multiplier
 (x1.5 at one clean landing, rising to x5.5 at nine). Bounce power climbs from 520 toward a
 980 ceiling; the grip also spins faster the more saltos you have banked, so the release
 window narrows as the score grows.
 
 ## Winning and losing
-Endless high-score chase. There is no win state — the run ends on a crash landing and the
-overlay shows the final score and salto count. Replay with Enter, R, or a tap.
+Endless high-score chase. There is no win state — an unprotected crash ends the show.
+The overlay shows score and specific advice for incomplete, early, late or unreleased turns.
+Best combo and completed missions remain available in the recorded show statistics. Replay with Enter, R, or a tap.
 
 ## Look and feel
 Chunky pixel art in a night-circus hall: striped tent walls behind drifting spotlights,
@@ -63,13 +70,55 @@ jointed figure with a distinct silhouette per shape — curled for Tuck, jack-kn
 Pike, a wide V for Straddle, a straight line for Layout — and a leotard stripe colour-coded
 to the shape, which also tints her after-image trail and the dial needle. A tag under her
 names the current shape, and switches to `> NEXT SHAPE` the moment a release has armed the
-change. Four pips under the dial show which shapes the flight has already used. A halo
-turns amber then green as she passes through the landing window.
+change. The control cluster names the current or next shape, avoiding anonymous pips and a
+second corner dial. A halo marks upright at its top and carries an angle dot, turning
+amber then green inside the landing window.
 
-**The camera pulls back on the big bounces.** Above roughly 7 m the whole hall eases down
-to 0.8 scale, so the trampoline and bunting shrink away beneath her and real height reads
-as spectacle. The sky, spotlights, HUD and readouts stay unscaled so nothing becomes
-illegible and no edge is ever exposed.
+**The camera keeps the whole jump in view.** The trampoline stays anchored near the bottom
+while the venue scales down as altitude grows, with a short ascent lookahead. The athlete,
+release halo, labels and HUD stay at their readable size. Adaptive orientation switches
+between 640×400 on desktop and 480×640 in portrait.
+
+**Coaching and progression.** A single cluster beside the athlete (above or below in
+portrait) names SPACE / SPIN, explains that release freezes orientation, and distinguishes
+locked position from approaching touchdown. The landing countdown is explicitly labelled
+and appears only when descending with a safe locked angle. Evaluation is explicitly labelled LAST and is shown while released, solid for 1.7 seconds
+then fading over 0.4 seconds inside the same cluster. Shape changes are
+introduced at the first unlock, including release + hold and the slower rotation tradeoff.
+While rotating, the mission card folds to its target and auxiliary panels disappear.
+They return while the angle is locked and there is time to read. Applause appears after two perfect landings; rescue is labelled automatic only when earned.
+Duplicate multipliers, raw timers, unlabeled pips and the corner dial are removed. The
+athlete has brighter limb outlines, light shoes and distinct Pike, Straddle and overhead
+Layout silhouettes. Warm-up, Showtime and Finale change the tent and spotlight palette.
+
+**Scoring integrity.** A hold spanning a landing registers a fresh tuck on the next bounce.
+Release-and-regrab shape changes still require 0.12 seconds released. Variety counts actual
+rotation in a shape, so briefly touching an extra shape cannot farm the multiplier.
+
+## Show missions and risk / reward
+Six sequential missions add 250, 500, 800, 1000, 1500 and 2000 bonus points: three
+consecutive perfects; two shapes in one clean flight; a clean double flip; three shapes;
+a clean flight including Layout; and three perfect landings during Encore. Bonuses apply
+once, and only to successful landings. All completed missions leave an endless score chase.
+
+The first mission earns one rescue for the entire show. A dangerous landing consumes it,
+awards zero points, resets combo and reduces bounce power to 72% (minimum 460), then launches
+again. A subsequent unprotected crash ends the run. Restarts reset all missions and rescues.
+
+Applause gains 12 for perfect or 8 for clean, plus 6 per extra shape and 8 per extra flip.
+At 100 applause the following four clean landings score ×1.5; mission rewards stay additive.
+Encore begins after the triggering landing. A flat, wobble or rescue cancels Encore and
+reduces applause by 30. The audience cheers and lights/confetti respond to Encore; physics
+and the release window remain unchanged. Ranks progress from Rookie to Acrobat (5000),
+Headliner (20000) and Legend (50000). Progress is local to the current show.
+
+After the six missions, optional crowd calls rotate through: a clean Tuck double (+2000),
+three-shape Flow (+1000), perfect Layout (+1500), and a perfect release during the final
+0.4 seconds (+2000). Each allows three flights. Ignoring it changes the call without
+removing score or breaking combo; attempted tricks still follow ordinary landing rules.
+Rewards grow 25% every four successes, capped at +75%, and are additive outside Encore.
+A call cannot award its bonus twice on one landing. These goals encourage trading a safe
+early lock for extra rotations, style or a later release. They do not add new controls.
 
 ## Audio
 A carnival loop plays under the routine. Each bounce plays a soft launch cue pitched by
