@@ -5,6 +5,14 @@
 ### Breaking
 
 ### Added
+
+### Fixed
+
+### Internal
+
+## 0.3.0 — 2026-10-13
+
+### Added
 - Pierwsze salto jest bezkarną próbą: pokaz zatrzymuje się w pionie do puszczenia przycisku, a błędna próba pozwala spróbować ponownie.
 - Dodano samouczek czekający na pierwszy ruch, konkretne nazwy przycisków i kontekstowe objaśnienia zmiany figur.
 - Po sześciu misjach pojawiają się opcjonalne wezwania publiczności z limitem trzech skoków, bez kary za pominięcie.
