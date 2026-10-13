@@ -4,6 +4,7 @@ import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {loadEnvFile} from 'node:process';
+import {readKitPin,preparePublicRuntime} from './public-runtime.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const runtime=path.join(root,'.gamedev/local');
@@ -33,17 +34,23 @@ async function overlay() {
  await run(process.execPath,[path.join(root,'scripts/prepare-verify.mjs')],root,{VERIFY_ROOT:runtime});
 }
 async function setup() {
- if(!await exists(path.join(runtime,'.ready'))) {
+ const pin=await readKitPin(root);
+ let ready=await exists(path.join(runtime,'.ready'));
+ if(ready&&await exists(path.join(runtime,'public-kit.json'))) {
+  const installed=JSON.parse(await readFile(path.join(runtime,'public-kit.json'),'utf8'));
+  ready=installed.engineRef===pin.engineRef&&installed.kitSha256===pin.kitSha256;
+ }
+ if(!ready) {
   const temporary=path.join(root,'.gamedev/local-preparing');
   await mkdir(path.dirname(temporary),{recursive:true});
   await rm(temporary,{recursive:true,force:true});await mkdir(temporary);
   try {
    let archive;
+   const token=(process.env.GAMEDEV_PAT??process.env.GAMEDEV_CREATOR_KEY??'').trim();
    if(process.env.GAMEDEV_WORKSPACE_ARCHIVE)archive=await readFile(process.env.GAMEDEV_WORKSPACE_ARCHIVE);
-   else {
-    const token=(process.env.GAMEDEV_PAT??process.env.GAMEDEV_CREATOR_KEY??'').trim();
+   else if(token) {
     if(!/^gdpl_pat_[a-f0-9]{16}_[A-Za-z0-9_-]{43}$/.test(token))
-     throw new Error('First launch needs GAMEDEV_PAT in .env (create a PAT at https://www.gamedev.pl/studio/airtime/connect).');
+     throw new Error('Invalid GAMEDEV_PAT. Remove it to use the public GameKit, or create a PAT at https://www.gamedev.pl/studio/airtime/connect.');
     console.log('Downloading official Airtime workspace…');
     const response=await fetch('https://www.gamedev.pl/api/me/studio/games/airtime/workspace',{
      headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(120000)
@@ -51,12 +58,14 @@ async function setup() {
     if(!response.ok)throw new Error('Workspace download: HTTP '+response.status);
     archive=Buffer.from(await response.arrayBuffer());
    }
-   const archivePath=path.join(temporary,'workspace.tgz');
-   await writeFile(archivePath,archive);
-   await run('tar',['-xzf',archivePath,'-C',temporary],temporary);
-   await rm(archivePath);
-   if(await exists(path.join(temporary,'setup.mjs')))await run(process.execPath,['setup.mjs'],temporary);
-   else if(await exists(path.join(temporary,'workspace-setup.mjs')))await run(process.execPath,['workspace-setup.mjs','--force'],temporary);
+   if(archive) {
+    const archivePath=path.join(temporary,'workspace.tgz');
+    await writeFile(archivePath,archive);
+    await run('tar',['-xzf',archivePath,'-C',temporary],temporary);
+    await rm(archivePath);
+    if(await exists(path.join(temporary,'setup.mjs')))await run(process.execPath,['setup.mjs'],temporary);
+    else if(await exists(path.join(temporary,'workspace-setup.mjs')))await run(process.execPath,['workspace-setup.mjs','--force'],temporary);
+   } else await preparePublicRuntime(temporary,pin,run);
    await run(process.platform==='win32'?'npm.cmd':'npm',['ci'],temporary);
    await writeFile(path.join(temporary,'.gamedev-slug'),'airtime\n');
    await writeFile(path.join(temporary,'.ready'),'ready\n');

@@ -36,27 +36,36 @@ z `GAME.json.howToPlay`; workflow nie wysyła `index.html` ani konfiguracji repo
 
 ## Uruchomienie lokalne
 
-Wymagany Node.js 22 lub nowszy.
+Wymagany Node.js 22 lub nowszy, npm i `tar`. Konto Gamedev.pl ani token nie są potrzebne.
 
 ```sh
-npm install
+git clone https://github.com/gtanczyk/airtime.git
+cd airtime
+npm ci
 npm run dev
 ```
 
-Przy pierwszym uruchomieniu potrzebny jest PAT z [Studio](https://www.gamedev.pl/studio/airtime/connect).
-Zapisz go lokalnie w ignorowanym pliku `.env`:
-
-```dotenv
-GAMEDEV_PAT=twój_personal_access_token
-```
-
-Skrypt pobiera oficjalny Creator Kit do `.gamedev/local/`, instaluje jego zależności
-i otwiera lokalny podgląd przez gamedevpl CLI. Po przygotowaniu środowiska PAT nie
-jest potrzebny do kolejnych uruchomień. Zmiany w `src/` odświeżają podgląd;
+Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `gamedev-kit.json`,
+sprawdza SHA-256, przygotowuje `.gamedev/local/` i instaluje zależności z lockfile kita.
+Następnie otwiera lokalny podgląd przez gamedevpl CLI. Zmiany w `src/` odświeżają podgląd;
 Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
 
+`npm run setup` pozwala przygotować runtime bez otwierania gry.
 `npm run verify` wykonuje typecheck i sprawdzenia statyczne na tych samych źródłach.
 `npm run verify:sources` sprawdza paczkę bez pobierania silnika.
+`npm run dev -- --smoke` buduje podgląd, sprawdza stronę gry i zatrzymuje serwer.
+
+Właściciel może nadal pobrać prywatny workspace przy pierwszym uruchomieniu:
+wystarczy ustawić `GAMEDEV_PAT` w ignorowanym pliku `.env` (PAT z
+[Studio](https://www.gamedev.pl/studio/airtime/connect)). `GAMEDEV_CREATOR_KEY` pozostaje
+obsługiwanym aliasem. `GAMEDEV_WORKSPACE_ARCHIVE=/ścieżka/workspace.tgz` ma pierwszeństwo
+i używa wskazanego archiwum. Aby zmienić źródło istniejącego runtime, usuń `.gamedev/local/`.
+
+Aktualizację silnika wykonujemy ręcznie: zmieniamy pełny `engineRef` i `kitSha256`
+w `gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRef>.tgz`
+i testujemy czysty klon. Zmiana przypięcia przebuduje publiczny runtime przy kolejnym
+uruchomieniu. HTTP 404 oznacza niedostępny publiczny kit: Grzegorz musi sprawdzić
+flagę `PUBLIC_KIT_DOWNLOAD=true`, deploy i wsparcie refu. Tarballi i tokenów nie commitujemy.
 
 ## Wydania z CHANGELOG.md
 
