@@ -42,7 +42,7 @@ Wymagany Node.js 22 lub nowszy, npm i `tar`. Konto Gamedev.pl ani token nie są 
 git clone https://github.com/gtanczyk/airtime.git
 cd airtime
 npm ci
-npm run dev
+npm run play
 ```
 
 Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `gamedev-kit.json`,
@@ -53,7 +53,7 @@ Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
 `npm run setup` pozwala przygotować runtime bez otwierania gry.
 `npm run verify` wykonuje typecheck i sprawdzenia statyczne na tych samych źródłach.
 `npm run verify:sources` sprawdza paczkę bez pobierania silnika.
-`npm run dev -- --smoke` buduje podgląd, sprawdza stronę gry i zatrzymuje serwer.
+`npm run dev` działa tak samo jak `npm run play`. `npm run dev -- --smoke` buduje podgląd, sprawdza stronę gry i zatrzymuje serwer.
 
 Właściciel może nadal pobrać prywatny workspace przy pierwszym uruchomieniu:
 wystarczy ustawić `GAMEDEV_PAT` w ignorowanym pliku `.env` (PAT z
