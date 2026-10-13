@@ -2,24 +2,23 @@
 
 import {
   FEET_OFFSET,
-  GRAVITY,
+  GROUND_Y,
   HUD_H,
-  RELEASE_ARM,
+  TAU,
   SHAPE_ORDER,
-  SHAPE_RATE,
   TRAIL_MAX,
-  VARIETY_MULT,
   comboMultiplier,
   createRound,
+  failureAdvice,
   currentShape,
-  resolveLanding,
-  screenY,
   speedScaleFor,
   unlockedShapes,
   wrapAngle,
-  zoomFor,
   type Round
 } from './model.ts';
+import { stepFlight, timeToLand, landingCue } from './flight.ts';
+import { cameraScale } from './coaching.ts';
+import { MISSIONS, isClean } from './show.ts';
 import { GOOD, TRAIL, WARN } from './art.ts';
 import { paintForeground, paintWorld, shapeLabel } from './render.ts';
 
@@ -27,9 +26,10 @@ const { t } = GameKit;
 
 export function startGame() {
   GameKit.defineGame<Round>()
+    .orientation('adaptive')
     .input({
       steer: false,
-      touch: { dpad: false, buttons: [{ keys: [' '], label: 'Spin' }] }
+      touch: { dpad: false, buttons: [{ keys: [' '], label: t({ en: 'Spin', pl: 'Obrót' }) }] }
     })
     .audio({ volume: 0.62 })
     .menu({ accent: '#fff3d6' })
@@ -42,11 +42,11 @@ export function startGame() {
       pl: 'Nowy układ. Przytrzymaj spację w powietrzu, puść na pionie, by wylądować.'
     })
     .lose({
-      title: { en: 'CRASH!', pl: 'UPADEK!' },
+      title: { en: 'SHOW COMPLETE', pl: 'KONIEC POKAZU' },
       subtitle: (round) =>
         t(
-          { en: '{score} points · {saltos} saltos', pl: '{score} punktów · {saltos} salt' },
-          { score: round.score, saltos: round.saltos }
+          { en: '{score} pts · {hint}', pl: '{score} pkt · {hint}' },
+          { score: round.score, hint: t(failureAdvice(round)) }
         ),
       color: '#ff5a6a',
       sfx: 'lose',
@@ -59,12 +59,12 @@ export function startGame() {
         )
     })
     .hud((round) => ({
-      bar: { height: HUD_H, fill: '#150c26' },
+      bar: { height: HUD_H, fill: '#0c1427' },
       left: { text: `${t({ en: 'SCORE', pl: 'WYNIK' })} ${round.score}`, color: '#fff3d6' },
       center: {
         text:
           round.combo > 0
-            ? `${t({ en: 'COMBO', pl: 'COMBO' })} ${round.combo}  x${comboMultiplier(round.combo).toFixed(1)}`
+            ? `${t({ en: 'COMBO', pl: 'COMBO' })} ${round.combo} ×${comboMultiplier(round.combo).toFixed(1)}`
             : t({ en: 'NO COMBO', pl: 'BRAK COMBO' }),
         color: round.combo > 0 ? GOOD : '#8f7fc0'
       },
@@ -74,72 +74,54 @@ export function startGame() {
       }
     }))
     .update((round, kit, dt) => {
-      const { input, audio, particles, shake, end, width, height } = kit;
+      const { input, audio, particles, shake, end, width } = kit;
       const holding = input.down(' ') || input.held();
-      const unlocked = unlockedShapes(round.saltos);
-
-      if (holding) {
-        if (!round.holding) {
-          if (round.grabs > 0 && round.armed) {
-            round.shapeIndex = Math.min(round.shapeIndex + 1, unlocked - 1);
-            audio.play('rustle', { rate: 0.9 - round.shapeIndex * 0.08 });
-          } else if (round.grabs === 0) {
-            round.shapeIndex = 0;
-          }
-          round.shapeMask |= 1 << round.shapeIndex;
-          round.grabs += 1;
-          round.armed = false;
-          round.releaseTime = 0;
-        }
-        const step = SHAPE_RATE[SHAPE_ORDER[round.shapeIndex]] * round.speedScale * dt;
-        round.rot += step;
-        round.spinTotal += step;
-        round.radBy[round.shapeIndex] += step;
-        round.spinning = true;
-      } else {
-        if (round.holding) round.releaseTime = 0;
-        round.releaseTime += dt;
-        if (round.grabs > 0 && round.releaseTime >= RELEASE_ARM && round.shapeIndex < unlocked - 1) {
-          round.armed = true;
-        }
-        round.spinning = false;
-      }
-      round.holding = holding;
-
-      round.vy -= GRAVITY * dt;
-      round.alt += round.vy * dt;
-      if (round.alt > round.peak) round.peak = round.alt;
-
+      if (!round.started && !holding) return;
+      const bedY = GROUND_Y;
+      const { landing, shapeChanged } = stepFlight(round, holding, dt);
+      if (shapeChanged) audio.play('rustle', { rate: 0.9 - round.shapeIndex * 0.08 });
       round.ghosts.unshift({
-        alt: round.alt,
-        rot: round.rot,
-        life: 1,
+        alt: round.alt, rot: round.rot, life: 1,
         shape: round.spinning ? currentShape(round) : null
       });
       if (round.ghosts.length > TRAIL_MAX) round.ghosts.length = TRAIL_MAX;
-
-      if (round.alt > 0 || round.vy >= 0) return;
-
-      const bedY = Math.min(height - 40, screenY(0, round.camAlt));
-      const landing = resolveLanding(round);
+      if (!landing) return;
 
       if (landing.grade === 'crash') {
         particles.burst(width / 2, bedY - FEET_OFFSET, '#ff5a6a', 24, { maxSpeed: 260 });
-        end('lost', { at: { x: width / 2, y: Math.min(height - 20, bedY - 20) } });
+        end('lost', { at: { x: width / 2, y: bedY - 20 } });
         return;
       }
+      if (landing.grade === 'retry') return;
 
       if (landing.grade === 'perfect') {
         audio.play('bell', { rate: 1 + Math.min(round.combo, 8) * 0.05 });
         particles.burst(width / 2, bedY, GOOD, 20, { maxSpeed: 220 });
         round.flash = 1;
-        shake.add(4);
+        shake.add(3);
       } else if (landing.grade === 'clean') {
         audio.play('coin', { rate: 0.95 + Math.min(round.combo, 8) * 0.04 });
         particles.burst(width / 2, bedY, TRAIL, 14);
+      } else if (landing.grade === 'save') {
+        audio.play('bell', { rate: 0.75 });
+        particles.burst(width / 2, bedY, '#7ec8ff', 24, { maxSpeed: 200 });
+        shake.add(4);
       } else if (landing.grade === 'wobble') {
         audio.play('buzzer', { rate: 1.15 });
         shake.add(6);
+      }
+      if (round.show.lastBonus > 0) {
+        audio.play('bell', { rate: 1.4 });
+        GameKit.progress(`mission-${round.show.lastMission + 1}`);
+      }
+      if (round.show.dareReward > 0) {
+        audio.play('bell', { rate: 1.3 });
+        GameKit.progress('crowd-call');
+      }
+      if (round.show.encoreStarted) {
+        audio.play('bell', { rate: 1.6 });
+        particles.burst(width / 2, bedY, WARN, 32, { maxSpeed: 280 });
+        GameKit.progress('encore');
       }
       audio.play('jump', { rate: 0.85 + round.power / 1600 });
 
@@ -154,22 +136,27 @@ export function startGame() {
       round.unlockedCount = nowUnlocked;
       round.speedScale = speedScaleFor(round.saltos);
 
-      if (round.saltos >= 1 && round.jumps === 1) GameKit.progress('first-salto');
-      if (landing.variety >= 2 && landing.grade !== 'flat') GameKit.progress('shape-combo');
+      if (round.saltos >= 1 && !round.firstSalto) {
+        round.firstSalto = true;
+        GameKit.progress('first-salto');
+      }
+      if (landing.variety >= 2 && isClean(landing.grade)) GameKit.progress('shape-combo');
       if (round.combo === 5) GameKit.progress('combo-5');
     })
-    .ambient((round, _kit, dt) => {
+    .ambient((round, kit, dt) => {
       // Runs at every lifecycle state, so the crash screen keeps breathing.
       round.time += dt;
       round.gradeAge += dt;
+      round.practiceAge += dt;
       round.unlockAge += dt;
+      round.show.toastAge += dt;
+      round.show.dareAge += dt;
       round.flash = Math.max(0, round.flash - dt * 3);
       round.flex = Math.max(0, round.flex - dt * 3.4);
+      round.zoom = cameraScale(round, kit.height);
       for (const ghost of round.ghosts) ghost.life = Math.max(0, ghost.life - dt * 2.4);
 
-      const target = Math.max(0, round.alt - 150);
-      round.camAlt += (target - round.camAlt) * Math.min(1, dt * 6);
-      round.zoom += (zoomFor(round.alt) - round.zoom) * Math.min(1, dt * 5);
+
     })
     .render(paintWorld)
     .foreground(paintForeground)
@@ -186,11 +173,37 @@ export function startGame() {
       shape: currentShape(round),
       shapeName: shapeLabel(currentShape(round)),
       grabs: round.grabs,
+      rotations: Number((round.spinTotal / TAU).toFixed(3)),
+      armed: round.armed,
+      spinning: round.spinning,
       variety: round.gradeVariety,
-      varietyMult: VARIETY_MULT[round.gradeVariety],
       unlocked: round.unlockedCount,
       zoom: Number(round.zoom.toFixed(2)),
-      grade: round.grade ?? 'none'
+      grade: round.grade ?? 'none',
+      landingError: Number(round.gradeError.toFixed(2)),
+      remainingAir: Number(timeToLand(round).toFixed(2)),
+      cue: landingCue(round),
+      hype: round.show.heat,
+      encore: round.show.encore,
+      encoreRuns: round.show.encoreRuns,
+      mission: round.show.mission,
+      missionProgress: round.show.missionProgress,
+      missionsTotal: MISSIONS.length,
+      safety: round.show.safety,
+      saves: round.show.saves,
+      perfects: round.show.perfects,
+      bestTrick: round.show.bestTrick,
+      bestSpins: round.show.bestSpins,
+      started: round.started,
+      learnedShapes: round.learnedShapes,
+      dare: round.show.dare,
+      dareFlights: round.show.dareFlights,
+      daresWon: round.show.daresWon,
+      releaseAir: Number(round.releaseAir.toFixed(2)),
+      practice: round.practice,
+      practiceLocked: round.practiceLocked,
+      practiceTries: round.practiceTries,
+      failureHint: round.failureHint ?? 'none'
     }))
     .start();
 }

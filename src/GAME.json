@@ -23,18 +23,18 @@
   },
   "howToPlay": {
     "goal": {
-      "en": "Chain clean landings for the highest score.",
-      "pl": "Łącz czyste lądowania, by zdobyć najwyższy wynik."
+      "en": "Complete six missions, then choose optional crowd calls for extra points. Clean tricks fill applause and earn Encore.",
+      "pl": "Ukończ sześć misji, potem wybieraj opcjonalne wezwania publiczności. Czyste triki budują aplauz i uruchamiają bis."
     },
     "hint": {
-      "en": "Hold Space to spin, release upright to land. Release and grab again to change shape.",
-      "pl": "Przytrzymaj spację, aby obracać się w powietrzu. Puść na pionie, by wylądować. Puść i chwyć ponownie, aby zmienić figurę."
+      "en": "Hold SPACE or the SPIN button. Release on green to freeze your angle, then wait to land. Release and hold again in mid-air to change shape. An earned rescue works automatically. The first salto is a safe practice that pauses upright.",
+      "pl": "Przytrzymaj SPACJĘ lub przycisk OBRÓT. Puść na zielonym, aby zatrzymać obrót, i czekaj na lądowanie. Puść i przytrzymaj ponownie w locie, aby zmienić figurę. Zdobyty ratunek działa automatycznie. Pierwsze salto to bezkarna próba z zatrzymaniem w pionie."
     }
   },
   "theme": {
-    "accent": "#fff3d6",
-    "canvasBackground": "#150c26",
-    "canvasBorderColor": "#6b4aa0",
+    "accent": "#6ef2a3",
+    "canvasBackground": "#0b1227",
+    "canvasBorderColor": "#34486b",
     "pixelArt": true
   },
   "title": {
@@ -42,7 +42,7 @@
     "pl": "Airtime"
   },
   "description": {
-    "en": "Perform trampoline flips, combine shapes and land upright to keep your routine going.",
-    "pl": "Wykonuj salta na trampolinie, łącz figury i ląduj na nogach, aby kontynuować pokaz."
+    "en": "A one-button circus show: mix trampoline tricks, earn missions and bring the audience to their feet.",
+    "pl": "Cyrkowy pokaz na jednym przycisku: łącz triki, wykonuj misje i porwij publiczność."
   }
 }

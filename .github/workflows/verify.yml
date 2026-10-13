@@ -40,6 +40,8 @@ jobs:
           node-version: '22'
       - name: Validate sources
         run: node scripts/deploy.mjs --dry-run
+      - name: Test flight and camera
+        run: npm test
       - name: Download official verification workspace
         env:
           GAMEDEV_CREATOR_KEY: ${{ secrets.GAMEDEV_CREATOR_KEY }}

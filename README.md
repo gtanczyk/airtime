@@ -57,6 +57,7 @@ Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
 
 `npm run verify` wykonuje typecheck i sprawdzenia statyczne na tych samych źródłach.
 `npm run verify:sources` sprawdza paczkę bez pobierania silnika.
+`npm test` uruchamia testy lądowań, naliczania figur, misji, bisu, ratunku, wezwań publiczności i kadrowania bez PAT.
 
 ## Wydania z CHANGELOG.md
 
