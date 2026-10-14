@@ -63,10 +63,11 @@ The overlay shows score and specific advice for incomplete, early, late or unrel
 Best combo and completed missions remain available in the recorded show statistics. Replay with Enter, R, or a tap.
 
 ## Look and feel
-Chunky pixel art in a night-circus hall: striped tent walls behind drifting spotlights,
+Smooth illustrated shapes in a night-circus hall: warm lamps and side curtains frame
+striped tent walls behind drifting spotlights,
 bunting rows pinned to world altitudes so the climb is legible, a crowd silhouette on the
-floor, and a red-and-cream trampoline whose bed sags on every landing. The acrobat is a
-jointed figure with a distinct silhouette per shape — curled for Tuck, jack-knifed for
+floor, and a rounded red-and-cream trampoline whose bed sags on every landing. The acrobat is a
+slender jointed figure with connected rounded limbs, a distinct silhouette per shape — curled for Tuck, jack-knifed for
 Pike, a wide V for Straddle, a straight line for Layout — and a leotard stripe colour-coded
 to the shape, which also tints her after-image trail and the dial needle. A tag under her
 names the current shape, and switches to `> NEXT SHAPE` the moment a release has armed the

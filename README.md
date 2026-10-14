@@ -1,4 +1,4 @@
-![Rozgrywka Airtime](docs/media/airtime.gif)
+![Rozgrywka Airtime](docs/media/airtime.png)
 
 # Airtime
 
@@ -10,7 +10,7 @@ Akrobatyczna gra na trampolinie — obracaj się w powietrzu, zmieniaj figury i 
 
 - `src/` — komplet źródeł gry i metadanych wymaganych przez platformę.
 - `scripts/` — deployment, synchronizacja, verify i wydania.
-- `docs/media/` — animowany podgląd rozgrywki.
+- `docs/media/` — aktualny zrzut ekranu i archiwalny animowany podgląd rozgrywki.
 - `CHANGELOG.md` i `VERSION` — historia i numer wydania.
 
 ## Deployment

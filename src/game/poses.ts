@@ -1,7 +1,7 @@
 
 
 import { SHAPE_COLOR, type Shape } from './model.ts';
-import { HAIR, SHOES, SKIN, SUIT, SUIT_DARK, q } from './art.ts';
+import { HAIR, SHOES, SKIN, SUIT, SUIT_DARK } from './art.ts';
 
 type Pose = {
   lean: number;
@@ -27,10 +27,10 @@ const LAYOUT: Pose = {
   kneeR: 1.56,
   thigh: 14,
   shin: 13,
-  armL: 3.3,
-  armR: -0.16,
-  elbowL: 3.2,
-  elbowR: -0.06,
+  armL: 2.55,
+  armR: 0.59,
+  elbowL: 2.2,
+  elbowR: 0.94,
   upper: 13,
   fore: 11
 };
@@ -96,8 +96,9 @@ function segment(
   fill: string
 ) {
   draw.with({ x: ox, y: oy, rot: angle }, () => {
-    draw.rect(-1, -thick / 2 - 1, len + 2, thick + 2, { fill: '#dceaf4' });
-    draw.rect(0, -thick / 2, len, thick, { fill });
+    draw.rect(-thick / 2, -thick / 2, len + thick, thick, { fill, radius: thick / 2 });
+    draw.line(0, -thick * 0.22, len, -thick * 0.22,
+      { stroke: 'rgba(255,240,219,0.18)', lineWidth: 1 });
   });
 }
 
@@ -105,20 +106,20 @@ function tipOf(ox: number, oy: number, angle: number, len: number) {
   return { x: ox + Math.cos(angle) * len, y: oy + Math.sin(angle) * len };
 }
 
-function leg(draw: GameKitDraw, pose: Pose, hip: number, knee: number, fill: string) {
-  segment(draw, 0, 0, hip, pose.thigh, 10, fill);
-  const joint = tipOf(0, 0, hip, pose.thigh);
-  segment(draw, joint.x, joint.y, knee, pose.shin, 9, fill);
+function leg(draw: GameKitDraw, pose: Pose, hip: number, knee: number, fill: string, offset: number) {
+  segment(draw, offset, 0, hip, pose.thigh, 7, fill);
+  const joint = tipOf(offset, 0, hip, pose.thigh);
+  segment(draw, joint.x, joint.y, knee, pose.shin, 6, fill);
   const foot = tipOf(joint.x, joint.y, knee, pose.shin);
   draw.with({ x: foot.x, y: foot.y, rot: knee }, () => {
-    draw.rect(-1, -5, 8, 10, { fill: SHOES });
+    draw.rect(-2, -4, 8, 7, { fill: SHOES, radius: 3 });
   });
 }
 
 function arm(draw: GameKitDraw, pose: Pose, sx: number, sy: number, sh: number, elbow: number, fill: string) {
-  segment(draw, sx, sy, sh, pose.upper, 7, fill);
+  segment(draw, sx, sy, sh, pose.upper, 5, fill);
   const joint = tipOf(sx, sy, sh, pose.upper);
-  segment(draw, joint.x, joint.y, elbow, pose.fore, 6, fill);
+  segment(draw, joint.x, joint.y, elbow, pose.fore, 4, fill);
 }
 
 export function paintAcrobat(
@@ -134,23 +135,25 @@ export function paintAcrobat(
   const sx = Math.sin(pose.lean) * 16;
   const sy = -Math.cos(pose.lean) * 16;
 
-  draw.with({ x: q(x), y: q(y), rot }, () => {
-    leg(draw, pose, pose.hipL, pose.kneeL, '#cc4967');
-    arm(draw, pose, sx, sy, pose.armL, pose.elbowL, '#dba875');
+  draw.with({ x, y, rot }, () => {
+    leg(draw, pose, pose.hipL, pose.kneeL, '#bb355e', -3);
+    arm(draw, pose, sx - 5, sy, pose.armL, pose.elbowL, '#d9996e');
 
     draw.with({ rot: pose.lean }, () => {
-      draw.rect(-11, -22, 22, 24, { fill: '#dceaf4' });
-      draw.rect(-9, -20, 18, 20, { fill: SUIT });
-      draw.rect(-7, -18, 4, 6, { fill: '#ff8995' });
-      draw.rect(-9, -12, 18, 4, { fill: trim });
-      draw.rect(-7, -34, 14, 14, { fill: SKIN });
-      draw.rect(-11, -39, 22, 8, { fill: '#dceaf4' });
-      draw.rect(-10, -38, 20, 6, { fill: HAIR });
-      draw.rect(-10, -31, 4, 7, { fill: HAIR });
-      draw.rect(0, -27, 4, 4, { fill: '#2b2a45' });
+      draw.ellipse(-9, -32, 5, 7, { fill: HAIR });
+      draw.rect(-3, -25, 6, 8, { fill: SKIN, radius: 2 });
+      draw.rect(-8, -20, 16, 23, { fill: SUIT, radius: 6 });
+      draw.poly([{ x: -7, y: -18 }, { x: -3, y: -18 }, { x: 5, y: 0 }, { x: 1, y: 1 }],
+        { fill: '#ff889e', close: true });
+      draw.rect(-7, -8, 14, 3, { fill: trim, radius: 1 });
+      draw.circle(0, -29, 7, { fill: SKIN });
+      draw.ellipse(-1, -34, 8, 4, { fill: HAIR });
+      draw.ellipse(-6, -30, 3, 6, { fill: HAIR });
+      draw.circle(3, -29, 1.2, { fill: '#30243c' });
+      draw.circle(4, -25, 1.6, { fill: '#eb997c' });
     });
 
-    leg(draw, pose, pose.hipR, pose.kneeR, SUIT_DARK);
-    arm(draw, pose, sx, sy, pose.armR, pose.elbowR, SKIN);
+    leg(draw, pose, pose.hipR, pose.kneeR, SUIT_DARK, 3);
+    arm(draw, pose, sx + 5, sy, pose.armR, pose.elbowR, SKIN);
   });
 }

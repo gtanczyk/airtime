@@ -67,8 +67,9 @@ export function paintCoaching(round: Round, kit: GameKitGameContext) {
   const box = guideBox(round, width, height);
   const guide = guideLines(round);
   const text = (label: string, y: number, color: string, size: number) => draw.text(label, box.x + 10, y,
-    { fill: color, font: `800 ${size}px monospace`, baseline: 'middle' });
-  draw.rect(box.x, box.y, box.w, box.h, { fill: '#0b172d', stroke: guide.color, lineWidth: 1, radius: 7 });
+    { fill: color, font: `700 ${size}px sans-serif`, baseline: 'middle' });
+  draw.rect(box.x, box.y, box.w, box.h, { fill: 'rgba(12,23,42,0.78)', radius: 9 });
+  draw.rect(box.x, box.y + 8, 3, box.h - 16, { fill: guide.color, radius: 1 });
   text(GameKit.t(guide.title), box.y + 15, guide.color, 12);
   text(guide.detail, box.y + 34, '#eef4ff', 10);
   const upcoming = round.armed ? nextShape(round) : null;
@@ -93,9 +94,9 @@ export function paintCoaching(round: Round, kit: GameKitGameContext) {
     const alpha = Math.min(1, (2.1 - round.gradeAge) / 0.4);
     draw.with({ alpha }, () => {
       const y = height > width && box.y < ay ? box.y - 32 : box.y + box.h + 7;
-      draw.rect(box.x, y, box.w, 25, { fill: '#172b42', radius: 5 });
+      draw.rect(box.x, y, box.w, 25, { fill: 'rgba(12,23,42,0.45)', radius: 5 });
       draw.text(`${GameKit.t({ en: 'LAST:', pl: 'OSTATNI:' })} ${GameKit.t(labels[grade])}${round.gradePoints ? ` +${round.gradePoints}` : ''}`, box.x + 10, y + 13,
-        { fill: grade === 'wobble' ? WARN : '#8fffc2', font: '800 12px monospace', baseline: 'middle' });
+        { fill: grade === 'wobble' ? WARN : '#8fffc2', font: '700 11px sans-serif', baseline: 'middle' });
     });
   }
 }

@@ -3,29 +3,47 @@
 import { HUD_H, GROUND_Y, screenY, type Round } from './model.ts';
 import { q } from './art.ts';
 
-const TENT_A = 'rgba(45,45,88,0.19)';
-const TENT_B = 'rgba(8,17,35,0.16)';
+const TENT_A = 'rgba(93,80,132,0.12)';
+const TENT_B = 'rgba(8,17,35,0.08)';
 const BUNTING = ['#ff4d5e', '#ffd23f', '#6ef2a3', '#7ec8ff'];
 
 export function paintSky(draw: GameKitDraw, width: number, height: number, act: number) {
   draw.clear(
     draw.linearGradient(0, 0, 0, height, [
-      [0, act === 2 ? '#1b1029' : act === 1 ? '#101e32' : '#0b1227'],
-      [0.55, act === 2 ? '#331d38' : act === 1 ? '#153c48' : '#17213d'],
-      [1, act === 2 ? '#4b2438' : act === 1 ? '#1f3b48' : '#302348']
+      [0, act === 2 ? '#261431' : act === 1 ? '#14283c' : '#17203a'],
+      [0.55, act === 2 ? '#442440' : act === 1 ? '#1c414b' : '#2b3052'],
+      [1, act === 2 ? '#6a3449' : act === 1 ? '#305463' : '#45334f']
     ])
   );
   // vertical tent stripes
-  const stripe = 80;
+  const stripe = 48;
   for (let x = 0; x < width; x += stripe) {
     draw.rect(x, HUD_H, stripe / 2, height - HUD_H, { fill: TENT_A });
     draw.rect(x + stripe / 2, HUD_H, stripe / 2, height - HUD_H, { fill: TENT_B });
+  }
+  for (const side of [-1, 1]) {
+    const edge = side < 0 ? 0 : width;
+    const inward = -side;
+    draw.poly([{ x: edge, y: HUD_H }, { x: edge + inward * 80, y: HUD_H },
+      { x: edge + inward * 47, y: HUD_H + 78 }, { x: edge + inward * 29, y: height * 0.72 },
+      { x: edge + inward * 48, y: height }, { x: edge, y: height }],
+      { fill: '#542941', close: true });
+    for (let i = 0; i < 3; i++) draw.line(edge + inward * (9 + i * 12), HUD_H + 8,
+      edge + inward * (10 + i * 7), height * 0.72,
+      { stroke: i % 2 ? '#71394f' : '#3a213b', lineWidth: 7 });
+    draw.line(edge, height * 0.72, edge + inward * 30, height * 0.72 - 5,
+      { stroke: '#d8a45d', lineWidth: 3 });
+  }
+  for (let x = 28; x < width; x += 28) {
+    const y = HUD_H + 8 + Math.sin(x / width * Math.PI) * 9;
+    draw.circle(x, y, 4, { fill: 'rgba(255,206,125,0.09)' });
+    draw.circle(x, y, 1.5, { fill: '#efc681' });
   }
 }
 
 export function paintSpotlights(draw: GameKitDraw, width: number, height: number, time: number, act: number) {
   const sway = Math.sin(time * 0.6) * 46;
-  draw.with({ alpha: 0.065 }, () => {
+  draw.with({ alpha: 0.045 }, () => {
     draw.poly(
       [
         { x: 70, y: HUD_H },
@@ -102,8 +120,11 @@ export function paintCrowd(draw: GameKitDraw, width: number, bedY: number, heigh
     const x = 6 + i * 30;
     const cheer = round.show.encore > 0 ? 1 : round.show.heat / 100;
     const bob = (i % 3) * 4 + Math.sin(round.time * 6 + i) * cheer * 5;
-    draw.rect(q(x), q(floorY - 20 - bob), 16, 20 + bob, { fill: round.show.encore > 0 ? '#33475b' : '#241542' });
-    draw.circle(q(x + 8), q(floorY - 26 - bob), 7, { fill: round.show.encore > 0 ? '#65817d' : '#2e1b52' });
+    const palette = ['#293451', '#43314f', '#354053', '#4e344b'];
+    draw.rect(x, floorY - 19 - bob, 17, 23 + bob,
+      { fill: round.show.encore > 0 ? '#426267' : palette[((i % 4) + 4) % 4], radius: 7 });
+    draw.circle(x + 8, floorY - 24 - bob, 6,
+      { fill: round.show.encore > 0 ? '#99a49b' : '#766075' });
     if (cheer > 0.5) {
       draw.line(x, floorY - 10, x - 7, floorY - 31 - bob, { stroke: '#65817d', lineWidth: 4 });
       draw.line(x + 16, floorY - 10, x + 23, floorY - 31 - bob, { stroke: '#65817d', lineWidth: 4 });

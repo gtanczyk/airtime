@@ -7,6 +7,7 @@
 ### Added
 
 ### Fixed
+- Poprawiono oprawę po regresji graficznej: płynna sylwetka akrobatki bez białych obwódek, lżejsze panele, kurtyny, cieplejsze światła i dopracowana trampolina.
 
 ### Internal
 

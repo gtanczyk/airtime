@@ -98,34 +98,30 @@ export function paintDial(draw: GameKitDraw, cx: number, cy: number, rot: number
 export function paintTrampoline(draw: GameKitDraw, cx: number, bedY: number, flex: number) {
   const halfW = 104;
   const sag = flex * 26;
-  const legTop = bedY + 6;
-
-  // legs
-  block(draw, cx - halfW + 6, legTop, 10, 46, FRAME_DARK);
-  block(draw, cx + halfW - 16, legTop, 10, 46, FRAME_DARK);
-  block(draw, cx - halfW + 12, legTop + 42, halfW * 2 - 24, 8, FRAME);
-
-  // bed, drawn as a chunky sagging strip with a lit top edge
-  const steps = 12;
-  const cell = (halfW * 2) / steps + PX;
-  for (let i = 0; i < steps; i++) {
-    const mid = (i + 0.5) / steps;
-    const dip = Math.sin(mid * Math.PI) * sag;
-    const x0 = cx - halfW + (i / steps) * halfW * 2;
-    block(draw, x0, bedY + dip - 6, cell, 12, BED);
-    block(draw, x0, bedY + dip - 6, cell, 3, '#3d5a92');
+  draw.ellipse(cx, bedY + 49, 116, 7, { fill: 'rgba(8,13,28,0.35)' });
+  for (const side of [-1, 1]) {
+    const x = cx + side * 88;
+    draw.line(x, bedY + 5, x + side * 13, bedY + 44, { stroke: '#303e59', lineWidth: 8 });
+    draw.line(x - side * 1.5, bedY + 6, x + side * 11, bedY + 43,
+      { stroke: '#8299ad', lineWidth: 3 });
+    draw.rect(x + side * 13 - 13, bedY + 42, 26, 5, { fill: '#37445d', radius: 2 });
   }
-
-  // springs pulling in from both rails, just inside the pads
-  for (let i = 0; i < 3; i++) {
-    block(draw, cx - halfW + 44, bedY - 2 + i * 4, 10, 3, SPRING);
-    block(draw, cx + halfW - 54, bedY - 2 + i * 4, 10, 3, SPRING);
-  }
-
-  for (let i = 0; i < 4; i++) {
-    const w = 12;
-    block(draw, cx - halfW - 4 + i * w, bedY - 8, w, 14, i % 2 === 0 ? PAD_A : PAD_B);
-    block(draw, cx + halfW - 44 + i * w, bedY - 8, w, 14, i % 2 === 0 ? PAD_B : PAD_A);
+  draw.line(cx - 92, bedY + 36, cx + 92, bedY + 36, { stroke: '#536581', lineWidth: 3 });
+  const points = [];
+  for (let i = 0; i <= 20; i++) points.push({
+    x: cx - halfW + i / 20 * halfW * 2,
+    y: bedY - 3 + Math.sin(i / 20 * Math.PI) * sag
+  });
+  draw.poly([...points, ...points.map(point => ({ x: point.x, y: point.y + 8 })).reverse()],
+    { fill: '#16243c', close: true });
+  draw.poly(points, { stroke: '#9dbbd2', lineWidth: 2 });
+  for (const side of [-1, 1]) {
+    const x = cx + side * 82 - 24;
+    draw.rect(x, bedY - 9, 48, 16, { fill: '#a52843', radius: 5 });
+    draw.rect(x, bedY - 9, 48, 10, { fill: '#ee5266', radius: 5 });
+    for (let i = 0; i < 2; i++) draw.rect(x + 8 + i * 22, bedY - 9, 8, 16,
+      { fill: '#f3d9ad', radius: 2 });
+    draw.line(x + 5, bedY - 7, x + 43, bedY - 7, { stroke: '#ff9b96', lineWidth: 1 });
   }
 }
 

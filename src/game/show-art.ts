@@ -2,7 +2,7 @@ import { HUD_H, SHAPE_COLOR, SHAPE_NAMES, type Round } from './model.ts';
 import { MISSIONS, DARES, ENCORE_LANDINGS, dareRewardFor } from './show.ts';
 
 function showText(draw: GameKitDraw, label: string, x: number, y: number, color: string, size = 10, align: CanvasTextAlign = 'left') {
-  draw.text(label, x, y, { fill: color, font: `800 ${size}px monospace`, align, baseline: 'middle' });
+  draw.text(label, x, y, { fill: color, font: `700 ${size}px sans-serif`, align, baseline: 'middle' });
 }
 
 export function paintVenue(round: Round, kit: GameKitGameContext) {
@@ -55,7 +55,7 @@ export function paintShowHUD(round: Round, kit: GameKitGameContext) {
     }
     lines.forEach((line, i) => showText(draw, line, 22, y + i * 17, '#eef4ff', size));
   };
-  draw.rect(14, cardY, 180, cardH, { fill: '#0b172d', radius: 7 });
+  draw.rect(14, cardY, 180, cardH, { fill: 'rgba(12,23,42,0.76)', radius: 9 });
   if (toast) {
     showText(draw, GameKit.t({ en: 'MISSION COMPLETE', pl: 'MISJA UKOŃCZONA' }), 22, cardY + 16, '#8fffc2', 11);
     showText(draw, `+${MISSIONS[show.lastMission].reward} ${GameKit.t({ en: 'PTS', pl: 'PKT' })}`, 22, cardY + 41, '#fff3d6', 20);
@@ -86,7 +86,7 @@ export function paintShowHUD(round: Round, kit: GameKitGameContext) {
   let railY = cardY + cardH + 17;
   if (!timing && (show.perfects >= 2 || show.encore > 0)) {
     const active = show.encore > 0;
-    draw.rect(14, railY - 9, 180, 40, { fill: '#0b172d', radius: 6 });
+    draw.rect(14, railY - 9, 180, 40, { fill: 'rgba(12,23,42,0.68)', radius: 6 });
     showText(draw, active ? GameKit.t({ en: 'ENCORE: POINTS ×1.5', pl: 'BIS: PUNKTY ×1.5' })
       : GameKit.t({ en: 'APPLAUSE TO ENCORE', pl: 'APLAUZ DO BISU' }), 22, railY + 3, active ? '#ffd23f' : '#9fd7ff', 11);
     showText(draw, active ? GameKit.t({ en: 'Landings left: {n}', pl: 'Lądowania do końca: {n}' }, { n: show.encore })
