@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {createRound,TAU,resolveLanding} from '../src/game/model.ts';
 import {createShow,judgeShow,dareRewardFor} from '../src/game/show.ts';
 import {stepFlight} from '../src/game/flight.ts';
-import {guideBox} from '../src/game/coaching.ts';
+import {guideBox,cameraAltitude,stagePoint} from '../src/game/coaching.ts';
 const clean=(spins=1,variety=1,releaseAir=2)=>({grade:'perfect',spins,variety,points:100,err:.1,releaseAir});
 function finale(){const s=createShow();s.mission=6;s.dare=0;return s;}
 test('crowd calls reward a clean Tuck double once and advance to a different decision',()=>{
@@ -31,9 +31,9 @@ test('release timing and shape-learning are recorded from the actual hold/releas
 });
 test('coaching cluster stays inside the playfield and clear of the athlete in desktop and portrait',()=>{
  for(const [w,h] of [[640,400],[480,640]])for(let alt=0;alt<534;alt+=20){
-  const r=createRound();r.alt=alt;r.zoom=Math.max(.34,Math.min(1,(h-44-130)/(alt+32)));
+  const r=createRound();r.alt=alt;r.camAlt=cameraAltitude(r,h);
   const b=guideBox(r,w,h);assert.ok(b.x>=0&&b.x+b.w<=w);assert.ok(b.y>=44&&b.y+b.h+32<=h);
-  if(h>w)assert.ok(b.y>=224||b.y< h-70-(alt+32)*r.zoom);
+  if(h>w)assert.ok(b.y>=224||b.y<stagePoint(r,h,alt));
  }
 });
 test('guided practice stops upright and waits for release without advancing physics',()=>{

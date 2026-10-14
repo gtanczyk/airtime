@@ -2,13 +2,13 @@ import { HUD_H, FEET_OFFSET, TAU, SHAPE_NAMES, SHAPE_RATE, failureAdvice, curren
 import { GOOD, WARN, BAD } from './art.ts';
 import { landingCue, timeToLand } from './flight.ts';
 
-export function cameraScale(round: Round, height: number): number {
-  const lookahead = Math.max(0, round.vy) * 0.12;
-  return Math.max(0.34, Math.min(1, (height - HUD_H - 130) / (Math.max(0, round.alt) + lookahead + FEET_OFFSET)));
+export function cameraAltitude(round: Round, height: number): number {
+  const followY = Math.max(HUD_H + 90, height * 0.43);
+  return Math.max(0, round.alt - (height - 70 - FEET_OFFSET - followY));
 }
 
 export function stagePoint(round: Round, height: number, alt: number): number {
-  return height - 70 - (alt + FEET_OFFSET) * round.zoom;
+  return height - 70 + round.camAlt - alt - FEET_OFFSET;
 }
 
 export function guideBox(round: Round, width: number, height: number): { x: number; y: number; w: number; h: number } {

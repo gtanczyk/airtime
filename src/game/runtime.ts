@@ -17,7 +17,7 @@ import {
   type Round
 } from './model.ts';
 import { stepFlight, timeToLand, landingCue } from './flight.ts';
-import { cameraScale } from './coaching.ts';
+import { cameraAltitude } from './coaching.ts';
 import { MISSIONS, isClean } from './show.ts';
 import { GOOD, TRAIL, WARN } from './art.ts';
 import { paintForeground, paintWorld, shapeLabel } from './render.ts';
@@ -153,7 +153,7 @@ export function startGame() {
       round.show.dareAge += dt;
       round.flash = Math.max(0, round.flash - dt * 3);
       round.flex = Math.max(0, round.flex - dt * 3.4);
-      round.zoom = cameraScale(round, kit.height);
+      round.camAlt = cameraAltitude(round, kit.height);
       for (const ghost of round.ghosts) ghost.life = Math.max(0, ghost.life - dt * 2.4);
 
 
@@ -178,7 +178,8 @@ export function startGame() {
       spinning: round.spinning,
       variety: round.gradeVariety,
       unlocked: round.unlockedCount,
-      zoom: Number(round.zoom.toFixed(2)),
+      zoom: 1,
+      cameraAltitude: Number(round.camAlt.toFixed(2)),
       grade: round.grade ?? 'none',
       landingError: Number(round.gradeError.toFixed(2)),
       remainingAir: Number(timeToLand(round).toFixed(2)),

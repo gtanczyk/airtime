@@ -75,10 +75,12 @@ change. The control cluster names the current or next shape, avoiding anonymous 
 second corner dial. A halo marks upright at its top and carries an angle dot, turning
 amber then green inside the landing window.
 
-**The camera keeps the whole jump in view.** The trampoline stays anchored near the bottom
-while the venue scales down as altitude grows, with a short ascent lookahead. The athlete,
-release halo, labels and HUD stay at their readable size. Adaptive orientation switches
-between 640×400 on desktop and 480×640 in portrait.
+**The camera follows vertical jumps at constant scale.** It starts at the trampoline,
+then scrolls upward when the athlete reaches the upper part of the playfield. During
+high jumps the trampoline leaves the bottom of the view and returns on descent.
+Athlete, trampoline, trail and decorations share the same translation without zoom.
+HUD and control panels stay in screen space. Adaptive orientation switches between
+640×400 on desktop and 480×640 in portrait.
 
 **Coaching and progression.** A single cluster beside the athlete (above or below in
 portrait) names SPACE / SPIN, explains that release freezes orientation, and distinguishes

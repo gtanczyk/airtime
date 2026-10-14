@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRound,resolveLanding,TAU,MAX_POWER,COMBO_CAP,comboMultiplier} from '../src/game/model.ts';
 import {stepFlight,landingCue} from '../src/game/flight.ts';
-import {cameraScale,stagePoint} from '../src/game/coaching.ts';
+import {cameraAltitude,stagePoint} from '../src/game/coaching.ts';
 
 function flight(rot=TAU,shape=0) {
  const r=createRound(false);r.rot=rot;r.spinTotal=rot;r.radBy[shape]=rot;r.shapeMask=1<<shape;return r;
@@ -45,12 +45,15 @@ test('release guidance is reserved for completed flips and matches landing windo
  r.spinning=false;assert.equal(landingCue(r),'safe');
  r.rot=Math.PI;r.vy=-500;r.alt=20;assert.equal(landingCue(r),'danger');
 });
-test('camera keeps the athlete and trampoline visible at the maximum bounce in both orientations',()=>{
+test('camera follows altitude at constant scale and returns to the trampoline in both orientations',()=>{
  const r=createRound();
  for(const height of [400,640])for(let alt=0;alt<=MAX_POWER**2/1800;alt+=5){
-  r.alt=alt;r.vy=Math.sqrt(Math.max(0,MAX_POWER**2-1800*alt));r.zoom=cameraScale(r,height);
+  r.alt=alt;r.camAlt=cameraAltitude(r,height);
   const y=stagePoint(r,height,alt);
   assert.ok(y-43>=44,`halo inside playfield at ${height}/${alt}`);
-  assert.ok(height-70<=height-45,'trampoline above instruction dock');
+  assert.equal(stagePoint(r,height,0)-y,alt,'world distances do not shrink');
+  assert.equal(stagePoint(r,height,alt+20),y-20,'camera translates without scaling');
+  if(alt>400)assert.ok(r.camAlt>0,'camera follows high jumps');
  }
+ for(const height of [400,640]){r.alt=0;r.camAlt=cameraAltitude(r,height);assert.equal(r.camAlt,0);assert.equal(stagePoint(r,height,0),height-102);}
 });

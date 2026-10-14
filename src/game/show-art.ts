@@ -16,13 +16,13 @@ export function paintVenue(round: Round, kit: GameKitGameContext) {
     for (let y = HUD_H + 24; y < height - 35; y += 24) {
       draw.rect(x + 3, y, 4, 4, { fill: heat > 0.5 ? color : '#4a4055' });
     }
-    draw.ellipse(side === 0 ? 30 : width - 30, height - 77, 26, 6, { fill: `rgba(126,200,255,${0.08 + heat * 0.12})` });
+    draw.ellipse(side === 0 ? 30 : width - 30, height - 77 + round.camAlt, 26, 6, { fill: `rgba(126,200,255,${0.08 + heat * 0.12})` });
   }
-  const top = height - 68;
+  const top = height - 68 + round.camAlt;
   draw.ellipse(width / 2, top + 4, width * 0.33, 11, { fill: `rgba(126,200,255,${0.05 + heat * 0.08})` });
   for (let i = 0; i < 12; i++) {
     const x = 36 + i * (width - 72) / 11;
-    draw.rect(x, height - 65, 5, 3, { fill: active ? '#ffd23f' : '#506a96' });
+    draw.rect(x, height - 65 + round.camAlt, 5, 3, { fill: active ? '#ffd23f' : '#506a96' });
   }
   if (!active) return;
   draw.rect(20, HUD_H + 4, width - 40, height - HUD_H - 8, { stroke: 'rgba(255,210,63,0.3)', lineWidth: 1, radius: 8 });

@@ -65,12 +65,12 @@ export function paintSpotlights(draw: GameKitDraw, width: number, height: number
   });
 }
 
-export function paintBunting(draw: GameKitDraw, width: number, camAlt: number, height: number, zoom: number) {
+export function paintBunting(draw: GameKitDraw, width: number, camAlt: number, height: number) {
   const spacing = 160;
   const first = Math.max(40, Math.floor((camAlt - 200) / spacing) * spacing);
   for (let alt = first; alt < camAlt + height + 200; alt += spacing) {
-    const y = screenY(alt, camAlt) - 120;
-    const sy = height - 70 + (y - GROUND_Y) * zoom;
+    const y = screenY(alt, 0) - 120;
+    const sy = height - 70 + camAlt + y - GROUND_Y;
     if (sy < HUD_H + 70 || sy > height - 80) continue;
     draw.line(-140, q(y), width / 2 - 70, q(y), { stroke: '#5a3d7d', lineWidth: 2 });
     draw.line(width / 2 + 70, q(y), width + 140, q(y), { stroke: '#5a3d7d', lineWidth: 2 });

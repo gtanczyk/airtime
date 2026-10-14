@@ -67,10 +67,10 @@ export function gradeColor(grade: Grade): string {
 function paintScene(round: Round, kit: GameKitGameContext) {
   const { draw, width, height, particles } = kit;
   const cx = width / 2;
-  const bedY = GROUND_Y + round.camAlt;
-  const toScreen = (alt: number) => screenY(alt, round.camAlt);
+  const bedY = GROUND_Y;
+  const toScreen = (alt: number) => screenY(alt, 0);
 
-  paintBunting(draw, width, round.camAlt, height, round.zoom);
+  paintBunting(draw, width, round.camAlt, height);
   paintCrowd(draw, width, bedY, height, round);
 
   if (bedY < height + 200) {
@@ -86,8 +86,7 @@ function paintScene(round: Round, kit: GameKitGameContext) {
 export function paintWorld(round: Round, kit: GameKitGameContext) {
   const { draw, width, height } = kit;
   const cx = width / 2;
-  const ay = screenY(round.alt, round.camAlt) - FEET_OFFSET;
-  const zoom = round.zoom;
+  const ay = screenY(round.alt, 0) - FEET_OFFSET;
   const anchorY = height - 70;
 
   const act = round.show.mission >= 6 ? 2 : round.show.mission >= 3 ? 1 : 0;
@@ -95,13 +94,9 @@ export function paintWorld(round: Round, kit: GameKitGameContext) {
   paintSpotlights(draw, width, height, round.time, act);
   paintVenue(round, kit);
 
-  draw.with({ x: cx, y: anchorY, scale: zoom }, () => {
-    draw.with({ x: -cx, y: -GROUND_Y }, () => {
-      paintScene(round, kit);
-    });
-  });
+  draw.with({ y: anchorY - GROUND_Y + round.camAlt }, () => paintScene(round, kit));
 
-  const ayz = anchorY + (ay - GROUND_Y) * zoom;
+  const ayz = anchorY + round.camAlt + ay - GROUND_Y;
   const shape = currentShape(round);
   paintLandingRing(draw, cx, ayz, round.rot, round.spinTotal >= TAU * 0.85);
   paintAcrobat(draw, cx, ayz, round.rot, round.spinning && !round.practiceLocked ? shape : null);

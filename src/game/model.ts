@@ -62,9 +62,6 @@ export const SHAPE_MIN_RAD = 0.18;
 export const SPEED_GAIN = 0.008;
 export const SPEED_CAP = 0.45;
 
-export const ZOOM_START = 140;
-export const ZOOM_END = 460;
-export const ZOOM_MIN = 0.8;
 
 export type Grade = 'perfect' | 'clean' | 'wobble' | 'flat' | 'crash' | 'save' | 'retry';
 
@@ -102,7 +99,6 @@ export type Round = {
   power: number;
   speedScale: number;
   camAlt: number;
-  zoom: number;
   
   flex: number;
   score: number;
@@ -170,12 +166,6 @@ export function comboMultiplier(combo: number): number {
   return 1 + Math.min(combo, COMBO_CAP) * 0.5;
 }
 
-export function zoomFor(alt: number): number {
-  const t = Math.max(0, Math.min(1, (alt - ZOOM_START) / (ZOOM_END - ZOOM_START)));
-  const eased = t * t * (3 - 2 * t);
-  return 1 - (1 - ZOOM_MIN) * eased;
-}
-
 function resetFlight(round: Round) {
   round.rot = 0;
   round.spinTotal = 0;
@@ -214,7 +204,6 @@ export function createRound(practice = true): Round {
     power: BASE_POWER,
     speedScale: 1,
     camAlt: 0,
-    zoom: 1,
     flex: 0.6,
     score: 0,
     combo: 0,

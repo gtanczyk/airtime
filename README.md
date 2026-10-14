@@ -1,5 +1,7 @@
 ![Rozgrywka Airtime](docs/media/airtime.png)
 
+[Nagranie skoków z poprawioną kamerą — 30 s](docs/media/airtime-camera.mp4)
+
 # Airtime
 
 Akrobatyczna gra na trampolinie — obracaj się w powietrzu, zmieniaj figury i ląduj na pionie.
