@@ -7,9 +7,13 @@
 ### Added
 
 ### Fixed
-- Naprawiono kamerę skoków: podąża pionowo za akrobatką bez zmiany skali postaci i trampoliny; podłoże wraca w kadr podczas opadania.
 
 ### Internal
+
+## 0.3.2 — 2026-10-14
+
+### Fixed
+- Naprawiono kamerę skoków: podąża pionowo za akrobatką bez zmiany skali postaci i trampoliny; podłoże wraca w kadr podczas opadania.
 
 ## 0.3.1 — 2026-10-14
 
