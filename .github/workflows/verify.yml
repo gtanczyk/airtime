@@ -45,6 +45,8 @@ jobs:
         run: npm ci
       - name: Test runtime bootstrap
         run: node --test scripts/public-runtime.test.mjs
+      - name: Test source sync protection
+        run: node --test scripts/sync-from-gamedev.test.mjs
       - name: Prepare public local environment
         run: npm run setup
       - name: Typecheck and static game checks

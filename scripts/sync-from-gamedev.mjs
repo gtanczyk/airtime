@@ -1,6 +1,27 @@
 import { readFile, writeFile, mkdir, readdir, rm, appendFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const git = promisify(execFile);
+const evidence = new Set(['TRACE.json','PLAYTEST.json','index.html']);
+function fingerprint(files) {
+  const source = files.filter(f => sourcePath(f.path) && !evidence.has(f.path))
+    .map(f => [f.path,f.content]).sort((a,b) => a[0].localeCompare(b[0]));
+  return createHash('sha256').update(JSON.stringify(source)).digest('hex');
+}
+async function repositoryChanged(root, previous, currentHash) {
+  if (previous.sourceHash) return previous.sourceHash !== currentHash;
+  try {
+    const cwd = path.dirname(root);
+    const {stdout:base} = await git('git',['log','-1','--format=%H','--','.github/gamedev-sync.json'],{cwd});
+    if (!base.trim()) return true;
+    const {stdout:changed} = await git('git',['diff','--name-only',base.trim(),'--','src'],{cwd});
+    return changed.trim().split('\n').some(p => p.startsWith('src/')
+      && sourcePath(p.slice(4)) && !evidence.has(p.slice(4)));
+  } catch { return true; }
+}
 const allowed = new Set(['SPEC.md','GAME.json','game.ts','style.css','CAPTURE.json','ACCEPTANCE.json','AGENT.json','EDITOR.json','EDITOR.content.json','music.json','TRACE.json','PLAYTEST.json','index.html']);
 export function sourcePath(p) {
   return typeof p === 'string' && !p.split('/').some(x => x === '..' || x === '.' || !x)
@@ -35,14 +56,22 @@ export async function applySnapshot(root, snapshot) {
     }
     return found;
   }
-  for (const p of await existing()) if (!paths.has(p)) await rm(path.join(root,p));
+  const currentPaths = await existing();
+  const current = await Promise.all(currentPaths.map(async p => ({path:p,content:await readFile(path.join(root,p),'utf8')})));
+  const sourceHash = fingerprint(selected);
+  const currentHash = fingerprint(current);
+  if (previous && sourceHash !== currentHash && await repositoryChanged(root,previous,currentHash)) {
+    console.log('Repository sources changed since the last Studio sync; preserving them until Studio and repository are reconciled.');
+    return false;
+  }
+  for (const p of currentPaths) if (!paths.has(p)) await rm(path.join(root,p));
   for (const f of selected) {
     const dest = path.join(root,f.path);
     await mkdir(path.dirname(dest),{recursive:true});
     await writeFile(dest,f.content);
   }
   await mkdir(path.dirname(statePath),{recursive:true});
-  await writeFile(statePath,JSON.stringify({version:snapshot.version},null,2)+'\n');
+  await writeFile(statePath,JSON.stringify({version:snapshot.version,sourceHash},null,2)+'\n');
   if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT,'version='+String(snapshot.version).replace(/[^A-Za-z0-9_.-]/g,'')+'\n');
   console.log('Downloaded Studio version '+snapshot.version);
   return true;

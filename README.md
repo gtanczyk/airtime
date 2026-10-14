@@ -103,8 +103,10 @@ scalenie automatyzacją z GITHUB_TOKEN nie uruchamia kolejnego workflow.
 
 Workflow **Sync sources from Gamedev.pl** sprawdza źródła co godzinę lub ręcznie.
 Różnice tworzą albo aktualizują PR `sync/gamedev`, także usunięcia plików gry.
-Nie nadpisuje workflow, skryptów, dokumentacji ani licencji. Pomija aktywnego agenta
-i niezapisane edycje. Importowany podgląd nie musi mieć pozytywnego wyniku buildu.
+Nie nadpisuje workflow, skryptów, dokumentacji ani licencji. Chroni zmiany źródeł
+w repozytorium od ostatniej synchronizacji: rozbieżne źródła
+ze Studio wymagają uzgodnienia. Zgodna wersja wdrożona z repo odnawia punkt synchronizacji.
+Pomija aktywnego agenta i niezapisane edycje. Importowany podgląd nie musi mieć pozytywnego wyniku buildu.
 Przejrzyj PR: platforma może zastąpić zmiany repo, których jeszcze nie wdrożono.
 
 Scalenie synchronizacji samo nie wdraża gry. Dopisz zmiany do Unreleased, jeśli

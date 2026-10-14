@@ -9,6 +9,7 @@
 ### Fixed
 
 ### Internal
+- Synchronizacja ze Studio chroni nowsze źródła w repozytorium; dodano testy zapobiegające cofnięciu poprawionej kamery przez automatyczny PR.
 
 ## 0.3.2 — 2026-10-14
 

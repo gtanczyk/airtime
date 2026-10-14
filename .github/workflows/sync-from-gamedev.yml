@@ -22,9 +22,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: master
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test source sync protection
+        run: node --test scripts/sync-from-gamedev.test.mjs
       - name: Download completed Studio sources
         id: download
         env:
