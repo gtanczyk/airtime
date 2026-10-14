@@ -8,9 +8,13 @@
 
 ### Fixed
 - Naprawiono kamerę skoków: podąża pionowo za akrobatką bez zmiany skali postaci i trampoliny; podłoże wraca w kadr podczas opadania.
-- Poprawiono oprawę po regresji graficznej: płynna sylwetka akrobatki bez białych obwódek, lżejsze panele, kurtyny, cieplejsze światła i dopracowana trampolina.
 
 ### Internal
+
+## 0.3.1 — 2026-10-14
+
+### Fixed
+- Poprawiono oprawę po regresji graficznej: płynna sylwetka akrobatki bez białych obwódek, lżejsze panele, kurtyny, cieplejsze światła i dopracowana trampolina.
 
 ## 0.3.0 — 2026-10-13
 
