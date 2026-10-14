@@ -91,7 +91,7 @@ else if(command==='verify') {
  const output=await preview(cli,['play','--preview','--detach','airtime',...(smoke||process.argv.includes('--no-open')?['--no-open']:[])]);
  if(smoke) {
   try {
-   const url=output.match(/http:\/\/127\.0\.0\.1:\d+\/[A-Za-z0-9]+\//)?.[0];
+   const url=output.match(/local live preview:\s*(http:\/\/127\.0\.0\.1:\d+\/(?:[A-Za-z0-9]+\/)?)(?=\s|$)/)?.[1];
    if(!url)throw new Error('Preview URL missing');
    let passed=false;
    for(let attempt=0;attempt<120;attempt++){
