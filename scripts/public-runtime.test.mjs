@@ -1,20 +1,26 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,readFile,writeFile,rm,mkdir} from 'node:fs/promises';
+import {mkdtemp,readFile,writeFile,rm,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {readKitPin,preparePublicRuntime} from './public-runtime.mjs';
 
-const pin=JSON.parse(await readFile(new URL('../.github/gamedev-kit.json',import.meta.url),'utf8'));
+const pin=JSON.parse(await readFile(new URL('../gamedev-kit.json',import.meta.url),'utf8'));
+
+test('official CLI source-repository entry points remain regular files at the root',async()=>{
+ for(const file of ['../gamedev-kit.json','../src/SPEC.md'])
+  assert.ok((await stat(new URL(file,import.meta.url))).isFile(),file);
+ const spec=await readFile(new URL('../src/SPEC.md',import.meta.url),'utf8');
+ assert.match(spec,/^slug: airtime$/m);
+});
 
 test('only accepts full engine refs and SHA-256 pins',async()=>{
  const root=await mkdtemp(path.join(tmpdir(),'airtime-pin-'));
  try {
-  await mkdir(path.join(root,'.github'));
-  await writeFile(path.join(root,'.github/gamedev-kit.json'),JSON.stringify(pin));
+  await writeFile(path.join(root,'gamedev-kit.json'),JSON.stringify(pin));
   assert.deepEqual(await readKitPin(root),pin);
   for(const invalid of [{...pin,engineRef:pin.engineRef.slice(0,7)},{...pin,kitSha256:'invalid'}]) {
-   await writeFile(path.join(root,'.github/gamedev-kit.json'),JSON.stringify(invalid));
+   await writeFile(path.join(root,'gamedev-kit.json'),JSON.stringify(invalid));
    await assert.rejects(readKitPin(root),/full engineRef and kitSha256/);
   }
  } finally {await rm(root,{recursive:true,force:true});}

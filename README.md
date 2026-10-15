@@ -47,12 +47,14 @@ npm ci
 npm run play
 ```
 
-Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `.github/gamedev-kit.json`,
+Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `gamedev-kit.json`,
 sprawdza SHA-256, przygotowuje `.gamedev/local/` i instaluje zależności z lockfile kita.
 Następnie otwiera lokalny podgląd przez gamedevpl CLI. Zmiany w `src/` odświeżają podgląd;
 Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
 
 `npm run setup` pozwala przygotować runtime bez otwierania gry.
+`gamedev-kit.json` pozostaje w katalogu głównym — oficjalne polecenia `gamedevpl play`
+i `gamedevpl pull` wymagają go tam do rozpoznania repozytorium źródeł.
 `npm run verify` wykonuje typecheck i sprawdzenia statyczne na tych samych źródłach.
 `npm run verify:sources` sprawdza paczkę bez pobierania silnika.
 `npm run dev` działa tak samo jak `npm run play`. `npm run dev -- --smoke` buduje podgląd, sprawdza stronę gry i zatrzymuje serwer.
@@ -64,7 +66,7 @@ obsługiwanym aliasem. `GAMEDEV_WORKSPACE_ARCHIVE=/ścieżka/workspace.tgz` ma p
 i używa wskazanego archiwum. Aby zmienić źródło istniejącego runtime, usuń `.gamedev/local/`.
 
 Aktualizację silnika wykonujemy ręcznie: zmieniamy pełny `engineRef` i `kitSha256`
-w `.github/gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRef>.tgz`
+w `gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRef>.tgz`
 i testujemy czysty klon. Zmiana przypięcia przebuduje publiczny runtime przy kolejnym
 uruchomieniu. HTTP 404 oznacza niedostępny publiczny kit: Grzegorz musi sprawdzić
 flagę `PUBLIC_KIT_DOWNLOAD=true`, deploy i wsparcie refu. Tarballi i tokenów nie commitujemy.

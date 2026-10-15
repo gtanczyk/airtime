@@ -7,6 +7,7 @@
 ### Added
 
 ### Fixed
+- Przywrócono gamedev-kit.json w katalogu głównym wymaganym przez bezpośrednie polecenia gamedevpl play i pull.
 - Przywrócono spójny pixel art: rastrowe figury w obrocie, ograniczona paleta, pikselowe tło i interfejs.
 
 ### Internal

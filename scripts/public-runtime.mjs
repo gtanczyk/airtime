@@ -3,7 +3,7 @@ import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import path from 'node:path';
 
 export async function readKitPin(root) {
- const pin=JSON.parse(await readFile(path.join(root,'.github/gamedev-kit.json'),'utf8'));
+ const pin=JSON.parse(await readFile(path.join(root,'gamedev-kit.json'),'utf8'));
  if(!/^[a-f0-9]{40}$/.test(pin.engineRef)||!/^[a-f0-9]{64}$/.test(pin.kitSha256))
   throw new Error('gamedev-kit.json must pin a full engineRef and kitSha256.');
  return {engineRef:pin.engineRef,kitSha256:pin.kitSha256};
