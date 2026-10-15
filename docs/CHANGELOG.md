@@ -7,8 +7,10 @@
 ### Added
 
 ### Fixed
+- Przywrócono spójny pixel art: rastrowe figury w obrocie, ograniczona paleta, pikselowe tło i interfejs.
 
 ### Internal
+- Odchudzono katalog główny: konfiguracja i wersja w .github, changelog w docs, testy pod scripts; zaktualizowano ścieżki CI i wydań.
 - Test lokalnego preview rozpoznaje adres portu bez tokenu oraz starsze linki z tokenem.
 - Synchronizacja ze Studio chroni nowsze źródła w repozytorium; dodano testy zapobiegające cofnięciu poprawionej kamery przez automatyczny PR.
 

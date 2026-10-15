@@ -8,13 +8,14 @@ const TENT_B = 'rgba(8,17,35,0.08)';
 const BUNTING = ['#ff4d5e', '#ffd23f', '#6ef2a3', '#7ec8ff'];
 
 export function paintSky(draw: GameKitDraw, width: number, height: number, act: number) {
-  draw.clear(
-    draw.linearGradient(0, 0, 0, height, [
-      [0, act === 2 ? '#261431' : act === 1 ? '#14283c' : '#17203a'],
-      [0.55, act === 2 ? '#442440' : act === 1 ? '#1c414b' : '#2b3052'],
-      [1, act === 2 ? '#6a3449' : act === 1 ? '#305463' : '#45334f']
-    ])
-  );
+  const shades = act === 2 ? ['#25182e','#35233e','#49304c']
+    : act === 1 ? ['#142638','#203e48','#304c57'] : ['#171e35','#252943','#34304c'];
+  draw.clear(shades[0]);
+  for (let band = 1; band < 3; band++) {
+    const y = Math.floor((HUD_H+(height-HUD_H)*band/3)/4)*4;
+    draw.rect(0,y,width,height-y,{fill:shades[band]});
+    for (let x = 0; x < width; x += 8) draw.rect(x,y-4,4,4,{fill:shades[band]});
+  }
   // vertical tent stripes
   const stripe = 48;
   for (let x = 0; x < width; x += stripe) {
@@ -24,45 +25,35 @@ export function paintSky(draw: GameKitDraw, width: number, height: number, act: 
   for (const side of [-1, 1]) {
     const edge = side < 0 ? 0 : width;
     const inward = -side;
-    draw.poly([{ x: edge, y: HUD_H }, { x: edge + inward * 80, y: HUD_H },
-      { x: edge + inward * 47, y: HUD_H + 78 }, { x: edge + inward * 29, y: height * 0.72 },
-      { x: edge + inward * 48, y: height }, { x: edge, y: height }],
-      { fill: '#542941', close: true });
-    for (let i = 0; i < 3; i++) draw.line(edge + inward * (9 + i * 12), HUD_H + 8,
-      edge + inward * (10 + i * 7), height * 0.72,
-      { stroke: i % 2 ? '#71394f' : '#3a213b', lineWidth: 7 });
-    draw.line(edge, height * 0.72, edge + inward * 30, height * 0.72 - 5,
-      { stroke: '#d8a45d', lineWidth: 3 });
+    for (let y = HUD_H; y < height; y += 4) {
+      const depth = y < height*0.72 ? 72-(y-HUD_H)*0.16 : 28+(y-height*0.72)*0.18;
+      const w = Math.max(24,Math.round(depth/4)*4);
+      draw.rect(side < 0 ? edge : edge-w,y,w,4,{fill:'#542941'});
+      for (let i=0;i<3;i++) draw.rect(edge+inward*(8+i*8)-(side>0?4:0),y,4,4,
+        {fill:i%2?'#71394f':'#3a213b'});
+    }
+    draw.rect(side < 0 ? 0 : width-28,Math.round(height*0.72/4)*4,28,4,{fill:'#d8a45d'});
   }
   for (let x = 28; x < width; x += 28) {
     const y = HUD_H + 8 + Math.sin(x / width * Math.PI) * 9;
-    draw.circle(x, y, 4, { fill: 'rgba(255,206,125,0.09)' });
-    draw.circle(x, y, 1.5, { fill: '#efc681' });
+    draw.rect(x-2,q(y),4,4,{fill:'#efc681'});
+    draw.rect(x,q(y),2,2,{fill:'#fff0bd'});
   }
 }
 
 export function paintSpotlights(draw: GameKitDraw, width: number, height: number, time: number, act: number) {
   const sway = Math.sin(time * 0.6) * 46;
-  draw.with({ alpha: 0.045 }, () => {
-    draw.poly(
-      [
-        { x: 70, y: HUD_H },
-        { x: 110, y: HUD_H },
-        { x: width / 2 + 90 + sway, y: height },
-        { x: width / 2 - 70 + sway, y: height }
-      ],
-      { fill: act === 2 ? '#ffcb78' : '#ffe9a8', close: true }
-    );
-    draw.poly(
-      [
-        { x: width - 110, y: HUD_H },
-        { x: width - 70, y: HUD_H },
-        { x: width / 2 + 70 - sway, y: height },
-        { x: width / 2 - 90 - sway, y: height }
-      ],
-      { fill: act === 1 ? '#99ffdd' : '#a8e6ff', close: true }
-    );
-  });
+  for (let y = HUD_H+20; y < height; y += 4) {
+    const t = (y-HUD_H)/height;
+    for (const side of [-1,1]) {
+      const source = side < 0 ? 86 : width-86;
+      const target = width/2+side*sway;
+      const x = Math.round((source+(target-source)*t)/4)*4;
+      draw.rect(x-12-Math.round(t*8)*4,y,24+Math.round(t*8)*8,4,
+        {fill:act===1?'rgba(126,200,255,0.035)':'rgba(255,210,130,0.035)'});
+    }
+  }
+
 }
 
 export function paintBunting(draw: GameKitDraw, width: number, camAlt: number, height: number) {
@@ -122,9 +113,10 @@ export function paintCrowd(draw: GameKitDraw, width: number, bedY: number, heigh
     const bob = (i % 3) * 4 + Math.sin(round.time * 6 + i) * cheer * 5;
     const palette = ['#293451', '#43314f', '#354053', '#4e344b'];
     draw.rect(x, floorY - 19 - bob, 17, 23 + bob,
-      { fill: round.show.encore > 0 ? '#426267' : palette[((i % 4) + 4) % 4], radius: 7 });
-    draw.circle(x + 8, floorY - 24 - bob, 6,
-      { fill: round.show.encore > 0 ? '#99a49b' : '#766075' });
+      { fill: round.show.encore > 0 ? '#426267' : palette[((i % 4) + 4) % 4], radius: 0 });
+    draw.rect(q(x+2),q(floorY-30-bob),12,12,
+      {fill:round.show.encore>0?'#99a49b':'#766075'});
+    draw.rect(q(x+2),q(floorY-30-bob),12,4,{fill:'#29233e'});
     if (cheer > 0.5) {
       draw.line(x, floorY - 10, x - 7, floorY - 31 - bob, { stroke: '#65817d', lineWidth: 4 });
       draw.line(x + 16, floorY - 10, x + 23, floorY - 31 - bob, { stroke: '#65817d', lineWidth: 4 });

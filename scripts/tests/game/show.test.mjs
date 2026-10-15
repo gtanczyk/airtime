@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createRound,resolveLanding,TAU,MIN_POWER} from '../src/game/model.ts';
-import {createShow,judgeShow,MISSIONS,ENCORE_LANDINGS,ENCORE_MULTIPLIER} from '../src/game/show.ts';
+import {createRound,resolveLanding,TAU,MIN_POWER} from '../../../src/game/model.ts';
+import {createShow,judgeShow,MISSIONS,ENCORE_LANDINGS,ENCORE_MULTIPLIER} from '../../../src/game/show.ts';
 const result=(grade='perfect',spins=1,variety=1)=>({grade,spins,variety,points:100,err:grade==='perfect'?0.1:1});
 function land(r,rot=TAU,mask=1) {
  r.rot=rot;r.spinTotal=rot;r.shapeMask=mask;r.radBy=[rot,0,0,0];return resolveLanding(r);

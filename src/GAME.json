@@ -35,7 +35,7 @@
     "accent": "#6ef2a3",
     "canvasBackground": "#0b1227",
     "canvasBorderColor": "#34486b",
-    "pixelArt": false
+    "pixelArt": true
   },
   "title": {
     "en": "Airtime",

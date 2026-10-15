@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {createRound,TAU,resolveLanding} from '../src/game/model.ts';
-import {createShow,judgeShow,dareRewardFor} from '../src/game/show.ts';
-import {stepFlight} from '../src/game/flight.ts';
-import {guideBox,cameraAltitude,stagePoint} from '../src/game/coaching.ts';
+import {createRound,TAU,resolveLanding} from '../../../src/game/model.ts';
+import {createShow,judgeShow,dareRewardFor} from '../../../src/game/show.ts';
+import {stepFlight} from '../../../src/game/flight.ts';
+import {guideBox,cameraAltitude,stagePoint} from '../../../src/game/coaching.ts';
 const clean=(spins=1,variety=1,releaseAir=2)=>({grade:'perfect',spins,variety,points:100,err:.1,releaseAir});
 function finale(){const s=createShow();s.mission=6;s.dare=0;return s;}
 test('crowd calls reward a clean Tuck double once and advance to a different decision',()=>{

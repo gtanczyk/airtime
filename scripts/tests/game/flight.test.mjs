@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createRound,resolveLanding,TAU,MAX_POWER,COMBO_CAP,comboMultiplier} from '../src/game/model.ts';
-import {stepFlight,landingCue} from '../src/game/flight.ts';
-import {cameraAltitude,stagePoint} from '../src/game/coaching.ts';
+import {createRound,resolveLanding,TAU,MAX_POWER,COMBO_CAP,comboMultiplier} from '../../../src/game/model.ts';
+import {stepFlight,landingCue} from '../../../src/game/flight.ts';
+import {cameraAltitude,stagePoint} from '../../../src/game/coaching.ts';
 
 function flight(rot=TAU,shape=0) {
  const r=createRound(false);r.rot=rot;r.spinTotal=rot;r.radBy[shape]=rot;r.shapeMask=1<<shape;return r;

@@ -1,7 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
-const file='CHANGELOG.md';
+const file='docs/CHANGELOG.md';
 const text=await readFile(file,'utf8');
-const current=(await readFile('VERSION','utf8')).trim();
+const current=(await readFile('.github/VERSION','utf8')).trim();
 if(!/^\d+\.\d+\.\d+$/.test(current)) throw new Error('Invalid VERSION');
 const match=text.match(/^## Unreleased\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/m);
 if(!match) throw new Error('Missing Unreleased');
@@ -22,7 +22,7 @@ else if(command==='cut') {
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Warsaw',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const replacement='## Unreleased\n\n### Breaking\n\n### Added\n\n### Fixed\n\n### Internal\n\n## '+next+' — '+today+'\n\n'+notes+'\n\n';
   await writeFile(file,text.replace(match[0],replacement));
-  await writeFile('VERSION',next+'\n');
+  await writeFile('.github/VERSION',next+'\n');
 } else if(command==='notes') {
   if(!/^\d+\.\d+\.\d+$/.test(version??'')) throw new Error('Invalid version');
   const section=text.split('\n## ').find(s=>s.startsWith(version+' — '));

@@ -42,10 +42,17 @@ export function paintTrail(draw: GameKitDraw, round: Round, x: number, toScreen:
 export function paintLandingRing(draw: GameKitDraw, x: number, y: number, rot: number, hasTurn: boolean) {
   const err = Math.abs(wrapAngle(rot));
   const color = !hasTurn ? '#7795ba' : err < PERFECT_WINDOW ? GOOD : err < CLEAN_WINDOW ? WARN : '#7795ba';
-  draw.circle(q(x), q(y), 43, { stroke: color, lineWidth: hasTurn && err < CLEAN_WINDOW ? 3 : 1 });
-  draw.line(x - 7, y - 49, x + 7, y - 49, { stroke: GOOD, lineWidth: 3 });
-  const a = wrapAngle(rot);
-  draw.circle(x + Math.sin(a) * 43, y - Math.cos(a) * 43, 4, { fill: hasTurn ? '#eef4ff' : '#7795ba' });
+  for (let i=0;i<80;i++) {
+    const a=i/80*Math.PI*2;
+    const px=Math.round((x+Math.sin(a)*43)/2)*2;
+    const py=Math.round((y-Math.cos(a)*43)/2)*2;
+    draw.rect(px,py,2,2,{fill:color});
+  }
+  draw.rect(Math.round(x/2)*2-6,Math.round((y-49)/2)*2,12,4,{fill:GOOD});
+  const a=wrapAngle(rot);
+  draw.rect(Math.round((x+Math.sin(a)*43)/2)*2-2,Math.round((y-Math.cos(a)*43)/2)*2-2,
+    6,6,{fill:hasTurn?'#eef4ff':'#7795ba'});
+
 }
 
 export function paintShapeTag(
@@ -98,31 +105,28 @@ export function paintDial(draw: GameKitDraw, cx: number, cy: number, rot: number
 export function paintTrampoline(draw: GameKitDraw, cx: number, bedY: number, flex: number) {
   const halfW = 104;
   const sag = flex * 26;
-  draw.ellipse(cx, bedY + 49, 116, 7, { fill: 'rgba(8,13,28,0.35)' });
-  for (const side of [-1, 1]) {
-    const x = cx + side * 88;
-    draw.line(x, bedY + 5, x + side * 13, bedY + 44, { stroke: '#303e59', lineWidth: 8 });
-    draw.line(x - side * 1.5, bedY + 6, x + side * 11, bedY + 43,
-      { stroke: '#8299ad', lineWidth: 3 });
-    draw.rect(x + side * 13 - 13, bedY + 42, 26, 5, { fill: '#37445d', radius: 2 });
+  for (const side of [-1,1]) {
+    for (let y=8;y<48;y+=4) {
+      const x=q(cx+side*(88+y/4));
+      draw.rect(x,q(bedY+y),8,4,{fill:FRAME_DARK});
+      draw.rect(x,q(bedY+y),4,4,{fill:SPRING});
+    }
+    block(draw,cx+side*98-12,bedY+44,24,8,FRAME);
   }
-  draw.line(cx - 92, bedY + 36, cx + 92, bedY + 36, { stroke: '#536581', lineWidth: 3 });
-  const points = [];
-  for (let i = 0; i <= 20; i++) points.push({
-    x: cx - halfW + i / 20 * halfW * 2,
-    y: bedY - 3 + Math.sin(i / 20 * Math.PI) * sag
-  });
-  draw.poly([...points, ...points.map(point => ({ x: point.x, y: point.y + 8 })).reverse()],
-    { fill: '#16243c', close: true });
-  draw.poly(points, { stroke: '#9dbbd2', lineWidth: 2 });
-  for (const side of [-1, 1]) {
-    const x = cx + side * 82 - 24;
-    draw.rect(x, bedY - 9, 48, 16, { fill: '#a52843', radius: 5 });
-    draw.rect(x, bedY - 9, 48, 10, { fill: '#ee5266', radius: 5 });
-    for (let i = 0; i < 2; i++) draw.rect(x + 8 + i * 22, bedY - 9, 8, 16,
-      { fill: '#f3d9ad', radius: 2 });
-    draw.line(x + 5, bedY - 7, x + 43, bedY - 7, { stroke: '#ff9b96', lineWidth: 1 });
+  block(draw,cx-96,bedY+36,192,4,FRAME);
+  for (let x=-halfW;x<halfW;x+=4) {
+    const dip=q(Math.sin((x+halfW)/(halfW*2)*Math.PI)*sag);
+    draw.rect(q(cx+x),q(bedY+dip),4,8,{fill:BED});
+    draw.rect(q(cx+x),q(bedY+dip),4,2,{fill:'#8299ad'});
   }
+  for (const side of [-1,1]) {
+    const x=cx+side*82-24;
+    block(draw,x,bedY-8,48,16,PAD_A);
+    block(draw,x,bedY+4,48,4,'#9e3150');
+    for (let i=0;i<2;i++) block(draw,x+8+i*24,bedY-8,8,16,PAD_B);
+    block(draw,x+4,bedY-8,40,4,'#ff8995');
+  }
+
 }
 
 export function paintBounceRings(draw: GameKitDraw, cx: number, bedY: number, flex: number) {

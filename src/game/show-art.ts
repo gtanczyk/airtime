@@ -2,7 +2,7 @@ import { HUD_H, SHAPE_COLOR, SHAPE_NAMES, type Round } from './model.ts';
 import { MISSIONS, DARES, ENCORE_LANDINGS, dareRewardFor } from './show.ts';
 
 function showText(draw: GameKitDraw, label: string, x: number, y: number, color: string, size = 10, align: CanvasTextAlign = 'left') {
-  draw.text(label, x, y, { fill: color, font: `700 ${size}px sans-serif`, align, baseline: 'middle' });
+  draw.text(label, x, y, { fill: color, font: `700 ${size}px monospace`, align, baseline: 'middle' });
 }
 
 export function paintVenue(round: Round, kit: GameKitGameContext) {
@@ -25,7 +25,7 @@ export function paintVenue(round: Round, kit: GameKitGameContext) {
     draw.rect(x, height - 65 + round.camAlt, 5, 3, { fill: active ? '#ffd23f' : '#506a96' });
   }
   if (!active) return;
-  draw.rect(20, HUD_H + 4, width - 40, height - HUD_H - 8, { stroke: 'rgba(255,210,63,0.3)', lineWidth: 1, radius: 8 });
+  draw.rect(20, HUD_H + 4, width - 40, height - HUD_H - 8, { stroke: 'rgba(255,210,63,0.3)', lineWidth: 1 });
   for (let i = 0; i < 22; i++) {
     const lane = i % 2 === 0 ? 0.08 : 0.72;
     const x = width * (lane + ((i * 17) % 18) / 100);
@@ -55,7 +55,7 @@ export function paintShowHUD(round: Round, kit: GameKitGameContext) {
     }
     lines.forEach((line, i) => showText(draw, line, 22, y + i * 17, '#eef4ff', size));
   };
-  draw.rect(14, cardY, 180, cardH, { fill: 'rgba(12,23,42,0.76)', radius: 9 });
+  draw.rect(14, cardY, 180, cardH, { fill: 'rgba(12,23,42,0.76)' });
   if (toast) {
     showText(draw, GameKit.t({ en: 'MISSION COMPLETE', pl: 'MISJA UKOŃCZONA' }), 22, cardY + 16, '#8fffc2', 11);
     showText(draw, `+${MISSIONS[show.lastMission].reward} ${GameKit.t({ en: 'PTS', pl: 'PKT' })}`, 22, cardY + 41, '#fff3d6', 20);
@@ -86,7 +86,7 @@ export function paintShowHUD(round: Round, kit: GameKitGameContext) {
   let railY = cardY + cardH + 17;
   if (!timing && (show.perfects >= 2 || show.encore > 0)) {
     const active = show.encore > 0;
-    draw.rect(14, railY - 9, 180, 40, { fill: 'rgba(12,23,42,0.68)', radius: 6 });
+    draw.rect(14, railY - 9, 180, 40, { fill: 'rgba(12,23,42,0.68)' });
     showText(draw, active ? GameKit.t({ en: 'ENCORE: POINTS ×1.5', pl: 'BIS: PUNKTY ×1.5' })
       : GameKit.t({ en: 'APPLAUSE TO ENCORE', pl: 'APLAUZ DO BISU' }), 22, railY + 3, active ? '#ffd23f' : '#9fd7ff', 11);
     showText(draw, active ? GameKit.t({ en: 'Landings left: {n}', pl: 'Lądowania do końca: {n}' }, { n: show.encore })
@@ -108,7 +108,7 @@ export function paintShowHUD(round: Round, kit: GameKitGameContext) {
     });
   }
   if (!timing && round.unlockBanner && round.unlockAge < 3) {
-    draw.rect(14, height - 54, width - 28, 42, { fill: '#0b172d', radius: 7 });
+    draw.rect(14, height - 54, width - 28, 42, { fill: '#0b172d' });
     const name = GameKit.t(SHAPE_NAMES[round.unlockBanner]);
     showText(draw, GameKit.t({ en: '{name} UNLOCKED', pl: 'ODBLOKOWANO: {name}' }, { name }), width / 2, height - 39,
       SHAPE_COLOR[round.unlockBanner], 12, 'center');

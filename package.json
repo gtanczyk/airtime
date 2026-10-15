@@ -12,7 +12,7 @@
     "setup": "node scripts/local.mjs setup",
     "verify": "node scripts/local.mjs verify",
     "verify:sources": "node scripts/deploy.mjs --dry-run",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test": "node --experimental-strip-types --test scripts/tests/game/*.test.mjs"
   },
   "devDependencies": {
     "gamedevpl": "https://github.com/gamedevpl/www.gamedev.pl/releases/download/cli-v0.44.2/gamedevpl-npm.tgz"

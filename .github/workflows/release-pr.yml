@@ -39,8 +39,8 @@ jobs:
           base: master
           delete-branch: true
           add-paths: |
-            CHANGELOG.md
-            VERSION
+            docs/CHANGELOG.md
+            .github/VERSION
           commit-message: 'release: Airtime v${{ steps.next.outputs.version }}'
           title: 'Wydanie Airtime v${{ steps.next.outputs.version }}'
           body: |

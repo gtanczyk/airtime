@@ -1,4 +1,4 @@
-![Rozgrywka Airtime](docs/media/airtime.png)
+![Rozgrywka Airtime](docs/media/airtime.gif)
 
 [Nagranie skoków z poprawioną kamerą — 30 s](docs/media/airtime-camera.mp4)
 
@@ -12,8 +12,8 @@ Akrobatyczna gra na trampolinie — obracaj się w powietrzu, zmieniaj figury i 
 
 - `src/` — komplet źródeł gry i metadanych wymaganych przez platformę.
 - `scripts/` — deployment, synchronizacja, verify i wydania.
-- `docs/media/` — aktualny zrzut ekranu i archiwalny animowany podgląd rozgrywki.
-- `CHANGELOG.md` i `VERSION` — historia i numer wydania.
+- `docs/media/` — aktualny GIF, zrzut ekranu i nagranie rozgrywki.
+- `docs/CHANGELOG.md` i `.github/VERSION` — historia i numer wydania.
 
 ## Deployment
 
@@ -47,7 +47,7 @@ npm ci
 npm run play
 ```
 
-Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `gamedev-kit.json`,
+Pierwsze uruchomienie pobiera publiczny GameKit przypięty w `.github/gamedev-kit.json`,
 sprawdza SHA-256, przygotowuje `.gamedev/local/` i instaluje zależności z lockfile kita.
 Następnie otwiera lokalny podgląd przez gamedevpl CLI. Zmiany w `src/` odświeżają podgląd;
 Ctrl+C zatrzymuje serwer. Uruchomienie nie wysyła zmian do Studio.
@@ -64,13 +64,13 @@ obsługiwanym aliasem. `GAMEDEV_WORKSPACE_ARCHIVE=/ścieżka/workspace.tgz` ma p
 i używa wskazanego archiwum. Aby zmienić źródło istniejącego runtime, usuń `.gamedev/local/`.
 
 Aktualizację silnika wykonujemy ręcznie: zmieniamy pełny `engineRef` i `kitSha256`
-w `gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRef>.tgz`
+w `.github/gamedev-kit.json`, sprawdzamy 302 z `https://www.gamedev.pl/api/kit/<engineRef>.tgz`
 i testujemy czysty klon. Zmiana przypięcia przebuduje publiczny runtime przy kolejnym
 uruchomieniu. HTTP 404 oznacza niedostępny publiczny kit: Grzegorz musi sprawdzić
 flagę `PUBLIC_KIT_DOWNLOAD=true`, deploy i wsparcie refu. Tarballi i tokenów nie commitujemy.
 `npm test` uruchamia testy lądowań, naliczania figur, misji, bisu, ratunku, wezwań publiczności i kadrowania bez PAT.
 
-## Wydania z CHANGELOG.md
+## Wydania z docs/CHANGELOG.md
 
 Zmiany opisuj w sekcji `Unreleased`:
 
