@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-16",
+  "baseCommit": "9ab9a5552e502192a870a2018d3b37aac9a7c42a",
+  "changes": [
+    "Six-step pixel pose transitions with bounded frame cache",
+    "0.10 second spring compression with buffered held input",
+    "Safe landing anticipation during final 0.13 seconds",
+    "Impact angle settles gradually; smaller landing particle bursts",
+    "Takeoff sound follows actual spring release"
+  ],
+  "tests": {
+    "gameTests": 30,
+    "runtimeAndSyncTests": 9,
+    "typecheckAndStaticValidation": "passed",
+    "scriptedCapture": {
+      "frames": 343,
+      "combo": 7,
+      "score": 5949
+    },
+    "longSessions": [
+      {
+        "fps": 30,
+        "jumps": 100,
+        "combo": 100,
+        "crowdCalls": 80,
+        "browserErrors": []
+      },
+      {
+        "fps": 60,
+        "jumps": 100,
+        "combo": 100,
+        "crowdCalls": 80,
+        "browserErrors": []
+      }
+    ],
+    "mobileTouch": "passed",
+    "realTimeHostPauseAndResume": "passed",
+    "desktopAndPortraitCamera": "constant scale, upward translation verified"
+  },
+  "media": {
+    "movie": "../media/airtime-camera.mp4",
+    "seconds": 30,
+    "fps": 30,
+    "audio": false,
+    "gif": "../media/airtime.gif",
+    "gifSeconds": 15
+  },
+  "independentReview": {
+    "model": "gpt-6.1-sol",
+    "rating": 8,
+    "outOf": 10,
+    "evidence": "Screenshots and frame-by-frame landing sequences from final recording; reviewer did not play or watch in real time.",
+    "confirmed": [
+      "Feet meet the compressed mat",
+      "Knees prepare before contact",
+      "Impact lean settles gradually",
+      "Particles no longer obscure feet",
+      "Athlete and trampoline maintain scale"
+    ],
+    "remaining": "Rotation after takeoff is fast, but no longer looks like a material defect in reviewed sequences."
+  },
+  "verificationLimit": "Long sessions verified the final flight mechanics before the last visual-only polish. Existing src/TRACE.json is historical and unchanged. Public platform delivery is separate from this repository verification."
+}

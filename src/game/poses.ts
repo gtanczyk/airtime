@@ -1,7 +1,8 @@
 
 
-import { SHAPE_COLOR, type Shape } from './model.ts';
+import { SHAPE_COLOR, BOUNCE_TIME, currentShape, wrapAngle, type Shape, type Round } from './model.ts';
 import { HAIR, SHOES, SKIN, SUIT, SUIT_DARK } from './art.ts';
+import { timeToLand } from './flight.ts';
 
 type Pose = {
   lean: number;
@@ -90,13 +91,48 @@ type PixelRun = { x: number; y: number; w: number; color: string };
 const SPRITE_PIXEL = 2;
 const TURN_FRAMES = 64;
 const spriteCache = new Map<string, PixelRun[]>();
+export type SpritePose = Shape | 'landing' | null;
+const LANDING: Pose = { ...LAYOUT, hipL: 2.2, hipR: 0.94, kneeL: 0.94, kneeR: 2.2, thigh: 11, shin: 12,
+  armL: 2.9, armR: 0.24, elbowL: 2.65, elbowR: 0.49 };
+const poseFor = (name: SpritePose): Pose => name === 'landing' ? LANDING : name ? POSES[name] : LAYOUT;
 
-export function acrobatPixels(shape: Shape | null, frame: number): PixelRun[] {
+export function animatePose(round: Round, dt: number) {
+  const preparing = round.vy < 0 && !round.spinning && Math.abs(wrapAngle(round.rot)) < 0.75 && timeToLand(round) < 0.13;
+  const target = round.bounceRemaining > 0 || preparing ? 'landing'
+    : round.spinning && !round.practiceLocked ? currentShape(round) : null;
+  if (target !== round.poseTo) {
+    round.poseFrom = round.poseTo;
+    round.poseTo = target;
+    round.poseAge = 0;
+  }
+  round.poseAge += dt;
+  round.flex = round.bounceRemaining > 0 ? Math.sin(Math.PI * (1 - round.bounceRemaining / BOUNCE_TIME)) : 0;
+}
+
+export function posePhase(round: Round): number {
+  return Math.min(6, Math.floor(round.poseAge / (round.poseTo === 'landing' ? 0.016 : 0.02)));
+}
+
+export function crouchAmount(round: Round): number {
+  const phase = posePhase(round) / 6;
+  return round.poseTo === 'landing' ? phase : round.poseFrom === 'landing' ? 1-phase : 0;
+}
+
+export function acrobatPixels(shape: SpritePose, frame: number, from: SpritePose = shape, phase = 6): PixelRun[] {
   frame = ((Math.round(frame) % TURN_FRAMES) + TURN_FRAMES) % TURN_FRAMES;
-  const key = `${shape ?? 'open'}:${frame}`;
+  phase = Math.max(0,Math.min(6,Math.round(phase)));
+  if (phase === 6) from = shape;
+  const key = `${from ?? 'open'}:${shape ?? 'open'}:${phase}:${frame}`;
   const cached = spriteCache.get(key);
   if (cached) return cached;
-  const pose = shape ? POSES[shape] : LAYOUT;
+  const start = poseFor(from), finish = poseFor(shape);
+  const mix = phase / 6;
+  const pose = { ...finish };
+  for (const field of Object.keys(pose) as Array<keyof Pose>) {
+    const delta = field.startsWith('hip') || field.startsWith('knee') || field.startsWith('arm') || field.startsWith('elbow') || field === 'lean'
+      ? wrapAngle(finish[field] - start[field]) : finish[field] - start[field];
+    pose[field] = start[field] + delta * mix;
+  }
   const angle = frame * Math.PI * 2 / TURN_FRAMES;
   const pixels = new Map<string, string>();
   const turn = (x: number, y: number, a: number) => ({ x: x * Math.cos(a) - y * Math.sin(a), y: x * Math.sin(a) + y * Math.cos(a) });
@@ -140,7 +176,7 @@ export function acrobatPixels(shape: Shape | null, frame: number): PixelRun[] {
   rect(-8,-20,16,22,SUIT,pose.lean);
   rect(-8,-20,4,16,'#ff8995',pose.lean);
   rect(4,-16,4,18,'#b93253',pose.lean);
-  rect(-8,-8,16,4,SHAPE_COLOR[shape ?? 'layout'],pose.lean);
+  rect(-8,-8,16,4,SHAPE_COLOR[shape === 'landing' || shape === null ? 'layout' : shape],pose.lean);
   rect(-6,-34,12,12,SKIN,pose.lean);
   rect(-8,-38,14,6,HAIR,pose.lean);
   rect(-8,-34,4,8,HAIR,pose.lean);
@@ -164,12 +200,13 @@ export function acrobatPixels(shape: Shape | null, frame: number): PixelRun[] {
     if (last && last.y === p.y*2 && last.x+last.w === p.x*2 && last.color === p.color) last.w += 2;
     else runs.push({x:p.x*2,y:p.y*2,w:2,color:p.color});
   }
+  if (spriteCache.size >= 1536) spriteCache.delete(spriteCache.keys().next().value!);
   spriteCache.set(key,runs);
   return runs;
 }
 
-export function paintAcrobat(draw: GameKitDraw,x: number,y: number,rot: number,shape: Shape | null) {
+export function paintAcrobat(draw: GameKitDraw,x: number,y: number,rot: number,shape: SpritePose,from: SpritePose = shape,phase = 6) {
   const frame = Math.round(rot / (Math.PI*2) * TURN_FRAMES);
   const ox = Math.round(x/2)*2, oy = Math.round(y/2)*2;
-  for (const p of acrobatPixels(shape,frame)) draw.rect(ox+p.x,oy+p.y,p.w,2,{fill:p.color});
+  for (const p of acrobatPixels(shape,frame,from,phase)) draw.rect(ox+p.x,oy+p.y,p.w,2,{fill:p.color});
 }

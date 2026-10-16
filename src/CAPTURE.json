@@ -7,13 +7,13 @@
     { "assert": { "field": "state", "equals": "playing" } },
 
     { "press": { "key": " ", "code": "Space", "frames": 24 } },
-    { "wait": 10 },
+    { "wait": 13 },
     { "assert": { "field": "saltos", "greaterThanOrEqual": 1 } },
     { "assert": { "field": "combo", "greaterThanOrEqual": 1 } },
     { "capture": "clean-landing" },
 
     { "press": { "key": " ", "code": "Space", "frames": 24 } },
-    { "wait": 14 },
+    { "wait": 17 },
     { "assert": { "field": "saltos", "greaterThanOrEqual": 2 } },
     { "assert": { "field": "unlocked", "greaterThanOrEqual": 2 } },
 
@@ -24,7 +24,7 @@
     { "assert": { "field": "grabs", "greaterThanOrEqual": 2 } },
     { "capture": "pike-shape" },
     { "press": { "key": " ", "code": "Space", "frames": 16 } },
-    { "wait": 5 },
+    { "wait": 8 },
     { "assert": { "field": "saltos", "greaterThanOrEqual": 3 } },
     { "assert": { "field": "variety", "greaterThanOrEqual": 2 } },
     { "assert": { "field": "combo", "greaterThanOrEqual": 3 } },
@@ -32,17 +32,17 @@
     { "press": { "key": " ", "code": "Space", "frames": 6 } },
     { "wait": 5 },
     { "press": { "key": " ", "code": "Space", "frames": 26 } },
-    { "wait": 9 },
+    { "wait": 12 },
 
     { "press": { "key": " ", "code": "Space", "frames": 6 } },
     { "wait": 5 },
     { "press": { "key": " ", "code": "Space", "frames": 25 } },
-    { "wait": 14 },
+    { "wait": 17 },
 
     { "press": { "key": " ", "code": "Space", "frames": 6 } },
     { "wait": 5 },
     { "press": { "key": " ", "code": "Space", "frames": 25 } },
-    { "wait": 18 },
+    { "wait": 21 },
 
     { "press": { "key": " ", "code": "Space", "frames": 6 } },
     { "wait": 5 },
@@ -50,7 +50,7 @@
     { "assert": { "field": "height", "greaterThanOrEqual": 380 } },
     { "capture": "high-flight" },
     { "press": { "key": " ", "code": "Space", "frames": 8 } },
-    { "wait": 22 },
+    { "wait": 25 },
 
     { "assert": { "field": "saltos", "greaterThanOrEqual": 6 } },
     { "assert": { "field": "combo", "greaterThanOrEqual": 6 } },

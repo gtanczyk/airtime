@@ -21,6 +21,7 @@ export const CLEAN_WINDOW = 0.75;
 export const WOBBLE_WINDOW = 1.3;
 
 export const TRAIL_MAX = 14;
+export const BOUNCE_TIME = 0.10;
 export const COMBO_CAP = 9;
 
 export type Shape = 'tuck' | 'pike' | 'straddle' | 'layout';
@@ -101,6 +102,11 @@ export type Round = {
   camAlt: number;
   
   flex: number;
+  bounceRemaining: number;
+  landingTilt: number;
+  poseFrom: Shape | 'landing' | null;
+  poseTo: Shape | 'landing' | null;
+  poseAge: number;
   score: number;
   combo: number;
   bestCombo: number;
@@ -204,7 +210,12 @@ export function createRound(practice = true): Round {
     power: BASE_POWER,
     speedScale: 1,
     camAlt: 0,
-    flex: 0.6,
+    flex: 0,
+    bounceRemaining: 0,
+    landingTilt: 0,
+    poseFrom: null,
+    poseTo: null,
+    poseAge: 1,
     score: 0,
     combo: 0,
     bestCombo: 0,
@@ -251,6 +262,7 @@ function pointsPerSalto(round: Round): number {
 export function resolveLanding(round: Round): Landing {
   round.alt = 0;
   const err = Math.abs(wrapAngle(round.rot));
+  round.landingTilt = wrapAngle(round.rot);
   const spins = Math.floor(round.spinTotal / TAU + 0.15);
   let grade = gradeFor(spins, err);
   if (grade === 'crash' || grade === 'wobble' || grade === 'flat') {
@@ -273,7 +285,7 @@ export function resolveLanding(round: Round): Landing {
   round.gradeError = err;
   round.grade = grade;
   round.gradeAge = 0;
-  round.flex = 1;
+  round.flex = 0;
   round.jumps += 1;
   if (round.peak > round.best) round.best = round.peak;
 
@@ -321,6 +333,8 @@ export function resolveLanding(round: Round): Landing {
   resetFlight(round);
   round.speedScale = speedScaleFor(round.saltos);
   round.vy = round.power;
+  round.bounceRemaining = grade === 'retry' ? 0 : BOUNCE_TIME;
+  round.spinning = false;
   return { grade, spins, points, err, variety };
 }
 

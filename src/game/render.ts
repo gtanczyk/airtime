@@ -5,6 +5,7 @@ import {
   GROUND_Y,
   HUD_H,
   TAU,
+  BOUNCE_TIME,
   currentShape,
   screenY,
   type Grade,
@@ -22,7 +23,7 @@ import {
 } from './art.ts';
 import { paintVenue, paintShowHUD } from './show-art.ts';
 import { paintCoaching, paintOnboarding } from './coaching.ts';
-import { paintAcrobat } from './poses.ts';
+import { paintAcrobat, posePhase, crouchAmount } from './poses.ts';
 import { paintBunting, paintCrowd, paintSky, paintSpotlights } from './backdrop.ts';
 
 const GRADE_TEXT: Record<Grade, { en: string; pl: string }> = {
@@ -96,10 +97,10 @@ export function paintWorld(round: Round, kit: GameKitGameContext) {
 
   draw.with({ y: anchorY - GROUND_Y + round.camAlt }, () => paintScene(round, kit));
 
-  const ayz = anchorY + round.camAlt + ay - GROUND_Y;
-  const shape = currentShape(round);
-  paintLandingRing(draw, cx, ayz, round.rot, round.spinTotal >= TAU * 0.85);
-  paintAcrobat(draw, cx, ayz, round.rot, round.spinning && !round.practiceLocked ? shape : null);
+  const ayz = anchorY + round.camAlt + ay - GROUND_Y + round.flex * 20 + crouchAmount(round) * 8;
+  const angle = round.bounceRemaining > 0 ? round.landingTilt * round.bounceRemaining / BOUNCE_TIME : round.rot;
+  paintLandingRing(draw, cx, ayz, angle, round.spinTotal >= TAU * 0.85);
+  paintAcrobat(draw, cx, ayz, angle, round.poseTo, round.poseFrom, posePhase(round));
 
   paintShowHUD(round, kit);
   paintCoaching(round, kit);

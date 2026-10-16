@@ -18,6 +18,7 @@ import {
 } from './model.ts';
 import { stepFlight, timeToLand, landingCue } from './flight.ts';
 import { cameraAltitude } from './coaching.ts';
+import { animatePose, posePhase } from './poses.ts';
 import { MISSIONS, isClean } from './show.ts';
 import { GOOD, TRAIL, WARN } from './art.ts';
 import { paintForeground, paintWorld, shapeLabel } from './render.ts';
@@ -78,7 +79,9 @@ export function startGame() {
       const holding = input.down(' ') || input.held();
       if (!round.started && !holding) return;
       const bedY = GROUND_Y;
+      const bouncing = round.bounceRemaining > 0;
       const { landing, shapeChanged } = stepFlight(round, holding, dt);
+      if (bouncing && round.bounceRemaining === 0) audio.play('jump', { rate: 0.85 + round.power / 1600 });
       if (shapeChanged) audio.play('rustle', { rate: 0.9 - round.shapeIndex * 0.08 });
       round.ghosts.unshift({
         alt: round.alt, rot: round.rot, life: 1,
@@ -96,12 +99,12 @@ export function startGame() {
 
       if (landing.grade === 'perfect') {
         audio.play('bell', { rate: 1 + Math.min(round.combo, 8) * 0.05 });
-        particles.burst(width / 2, bedY, GOOD, 20, { maxSpeed: 220 });
+        particles.burst(width / 2, bedY, GOOD, 8, { maxSpeed: 160 });
         round.flash = 1;
         shake.add(3);
       } else if (landing.grade === 'clean') {
         audio.play('coin', { rate: 0.95 + Math.min(round.combo, 8) * 0.04 });
-        particles.burst(width / 2, bedY, TRAIL, 14);
+        particles.burst(width / 2, bedY, TRAIL, 6);
       } else if (landing.grade === 'save') {
         audio.play('bell', { rate: 0.75 });
         particles.burst(width / 2, bedY, '#7ec8ff', 24, { maxSpeed: 200 });
@@ -120,10 +123,9 @@ export function startGame() {
       }
       if (round.show.encoreStarted) {
         audio.play('bell', { rate: 1.6 });
-        particles.burst(width / 2, bedY, WARN, 32, { maxSpeed: 280 });
+        particles.burst(width / 2, bedY, WARN, 16, { maxSpeed: 200 });
         GameKit.progress('encore');
       }
-      audio.play('jump', { rate: 0.85 + round.power / 1600 });
 
       // unlock earned; show banner once per shape
       const nowUnlocked = unlockedShapes(round.saltos);
@@ -152,7 +154,7 @@ export function startGame() {
       round.show.toastAge += dt;
       round.show.dareAge += dt;
       round.flash = Math.max(0, round.flash - dt * 3);
-      round.flex = Math.max(0, round.flex - dt * 3.4);
+      animatePose(round, dt);
       round.camAlt = cameraAltitude(round, kit.height);
       for (const ghost of round.ghosts) ghost.life = Math.max(0, ghost.life - dt * 2.4);
 
@@ -180,6 +182,9 @@ export function startGame() {
       unlocked: round.unlockedCount,
       zoom: 1,
       cameraAltitude: Number(round.camAlt.toFixed(2)),
+      bounceRemaining: Number(round.bounceRemaining.toFixed(3)),
+      pose: round.poseTo ?? 'open',
+      posePhase: posePhase(round),
       grade: round.grade ?? 'none',
       landingError: Number(round.gradeError.toFixed(2)),
       remainingAir: Number(timeToLand(round).toFixed(2)),

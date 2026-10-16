@@ -5,8 +5,10 @@
 ### Breaking
 
 ### Added
+- Dodano klatki przejściowe figur, przygotowanie do kontaktu i sprężyste odbicie z krótkim ugięciem maty.
 
 ### Fixed
+- Dźwięk wybicia towarzyszy rzeczywistemu startowi; ograniczono cząstki zasłaniające stopy i doprecyzowano komunikat zatrzymania obrotu.
 
 ### Internal
 

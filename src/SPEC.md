@@ -19,7 +19,7 @@ advice, without ending the show, spending rescue or earning points. A successful
 ends the rehearsal; subsequent flights use ordinary timing and failure rules.
 There is exactly one input, and it never needs aiming: hold it while airborne and the
 acrobat grips and rotates; release and she snaps open, frozen at whatever angle she
-reached. Release stops rotation immediately. Landing is safe only at an upright angle, so the
+reached. Release stops rotation immediately; the pixel body opens over six short animation steps. Landing is safe only at an upright angle, so the
 player watches the halo and releases on green.
 
 **Body shapes.** The first grab of a flight is a Tuck. Release for at least 0.12 s and grab
@@ -37,6 +37,12 @@ landing much easier to place, so switching late is both the greedy line and the 
 Shapes are earned, not dumped on the player: Pike unlocks at 2 saltos, Straddle at 6,
 Layout at 12, each announced with a banner. A player who never releases mid-flight simply
 plays the one-shape game and is never shown a control they have not earned.
+
+**Bounce.** After contact, the mat compresses and releases over 0.10 s. Rotation waits
+until takeoff; holding through contact begins the next Tuck automatically. Safe released
+descents prepare the knees during the final 0.13 s. The body follows the mat, gradually
+settles its impact angle, and opens from its crouch at takeoff. The launch sound occurs
+at actual takeoff; landing particles leave the feet visible.
 
 **Landing.** Judged on how close the body angle is to upright:
 

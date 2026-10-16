@@ -7,6 +7,14 @@ import {
 export function stepFlight(round: Round, holding: boolean, dt: number): {
   landing: Landing | null; shapeChanged: boolean
 } {
+  if (round.bounceRemaining > 0) {
+    const resting = Math.min(dt, round.bounceRemaining);
+    round.bounceRemaining = Math.max(0, round.bounceRemaining - dt);
+    round.spinning = false;
+    round.holding = holding;
+    dt -= resting;
+    if (dt < 0.000001) return { landing: null, shapeChanged: false };
+  }
   const unlocked = unlockedShapes(round.saltos);
   let shapeChanged = false;
   if (round.practice && round.practiceLocked && holding) return { landing: null, shapeChanged: false };
@@ -54,7 +62,7 @@ export function stepFlight(round: Round, holding: boolean, dt: number): {
 }
 
 export function timeToLand(round: Round): number {
-  return (round.vy + Math.sqrt(round.vy * round.vy + 2 * GRAVITY * Math.max(0, round.alt))) / GRAVITY;
+  return round.bounceRemaining + (round.vy + Math.sqrt(round.vy * round.vy + 2 * GRAVITY * Math.max(0, round.alt))) / GRAVITY;
 }
 
 export function landingCue(round: Round): 'hold' | 'release' | 'safe' | 'danger' {

@@ -20,7 +20,7 @@ test('landing windows award points, grow power, and reset combo on a wobble',()=
  assert.equal(resolveLanding(r).grade,'wobble');assert.equal(r.combo,0);assert.ok(r.score>210);
 });
 test('holding through a bounce registers the first grab and shape on the next flight',()=>{
- const r=flight();r.holding=true;resolveLanding(r);stepFlight(r,true,1/30);
+ const r=flight();r.holding=true;resolveLanding(r);for(let i=0;i<4;i++)stepFlight(r,true,1/30);
  assert.equal(r.grabs,1);assert.equal(r.shapeIndex,0);assert.equal(r.shapeMask,1);
 });
 test('a brief regrab does not farm variety and cannot skip the release delay',()=>{

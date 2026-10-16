@@ -104,7 +104,7 @@ export function paintDial(draw: GameKitDraw, cx: number, cy: number, rot: number
 
 export function paintTrampoline(draw: GameKitDraw, cx: number, bedY: number, flex: number) {
   const halfW = 104;
-  const sag = flex * 26;
+  const sag = flex * 20;
   for (const side of [-1,1]) {
     for (let y=8;y<48;y+=4) {
       const x=q(cx+side*(88+y/4));
@@ -131,8 +131,11 @@ export function paintTrampoline(draw: GameKitDraw, cx: number, bedY: number, fle
 
 export function paintBounceRings(draw: GameKitDraw, cx: number, bedY: number, flex: number) {
   if (flex <= 0.05) return;
-  const spread = (1 - flex) * 120;
-  draw.with({ alpha: flex * 0.5 }, () => {
-    draw.ellipse(cx, bedY - 2, 40 + spread, 8 + spread * 0.12, { stroke: '#9fd7ff', lineWidth: 2 });
-  });
+  const spread = Math.round((1-flex)*12/2)*2;
+  for (const side of [-1,1]) for (let i=0;i<3;i++) {
+    const x=q(cx+side*(24+i*12+spread));
+    const y=q(bedY-12-i*4);
+    draw.rect(x,y,4,4,{fill:i===0?'#fff3d6':'#9fd7ff'});
+    if(i===1)draw.rect(x+side*4,y-4,4,4,{fill:'#6ef2a3'});
+  }
 }

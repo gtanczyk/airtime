@@ -21,6 +21,10 @@ export function guideBox(round: Round, width: number, height: number): { x: numb
 }
 
 export function guideLines(round: Round): { title: { en: string; pl: string }; detail: string; color: string } {
+  if (round.bounceRemaining > 0) return {
+    title: { en: 'BOUNCE', pl: 'ODBICIE' },
+    detail: GameKit.t({ en: 'Hold to spin after takeoff', pl: 'Trzymaj: obrót po wybiciu' }), color: GOOD
+  };
   const cue = landingCue(round);
   const turns = Math.floor(round.spinTotal / TAU + 0.15);
   let title = { en: 'HOLD SPACE / SPIN', pl: 'TRZYMAJ SPACJĘ / OBRÓT' };
@@ -38,7 +42,7 @@ export function guideLines(round: Round): { title: { en: string; pl: string }; d
       : { en: 'Practice will stop upright', pl: 'Próba zatrzyma się na pionie' });
     color = GOOD;
   } else if (cue === 'safe') {
-    title = { en: 'POSITION LOCKED', pl: 'POZYCJA ZABLOKOWANA' };
+    title = { en: 'ROTATION STOPPED', pl: 'OBRÓT ZATRZYMANY' };
     detail = round.vy < 0
       ? GameKit.t({ en: 'Landing in {n}s — keep released', pl: 'Lądowanie za {n}s — nie trzymaj' }, { n: timeToLand(round).toFixed(1) })
       : GameKit.t({ en: 'Keep released until landing', pl: 'Nie trzymaj aż do lądowania' });
